@@ -2,4 +2,4 @@
 ! Microsoft Developer Studio generated include file.
 ! Used by Script1.rc
 !
-      integer, parameter :: IDD_DIALOG1 = 101
+      integer, parameter :: IDD_DIALOG1                     = 101

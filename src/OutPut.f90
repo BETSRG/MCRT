@@ -1,3 +1,4 @@
+
  Module OutPut
 
   USE Global
@@ -8,30 +9,30 @@
   USE Distribution_Factors
   USE EnergyBalance
 
-!
+!  
   IMPLICIT NONE
   CONTAINS
 !
   SUBROUTINE Print_ViewFactor_HeatFlux()
 !******************************************************************************
 !
-! PURPOSE:			Prints View Factors, Radiation Heat Flux and Heat Transfer
-!					Rate at Each Surface
-!
+! PURPOSE:			Prints View Factors, Radiation Heat Fluxe and Heat Transfer 
+!					Rate at Each Surface 
+!                   
 !
 !******************************************************************************
     IMPLICIT NONE
     INTEGER		:: I,J,k,Index
+  
 
-
-!  Write the Title of the Program and Output data
+!  Write the Title of the Program and Output data  
     Write(3,101)'Monte Carlo Method','PURPOSE:','Calculates The View &
                  Factors Using Monte Carlo Method','and','The Net Radiation &
 			     Heat Flux at Each Surface'
-101  Format(//,15x,A30,///,14x,A25,//,14x,A52,/,36x,A3,/,11x,A50,//)
+101  Format(//,15x,A30,///,14x,A25,//,14x,A52,/,36x,A3,/,11x,A50,//)				 
 
     DO k =1, NSurf
-	  Write(3,1001)NAEnergy(k,:),TCOUNTA(k)
+	  Write(3,1001)NAEnergy(k,:),TCOUNTA(k)  
       Write(6,1001)NAEnergyS(k,:),TSpecA(k) !JH !Writing the number of total specular rays absorbed at each surface
       Write(9,1001)NAEnergyR(k,:),TSpecR(k) !Writing the number of reflected specular rays absorbed at each surface
       Write(10,1001)NAEnergyWR(k,:),(TSpecA(k)-TSpecR(k))   !Writing the number of specular rays absorbed on first contact at each surface
@@ -50,7 +51,7 @@
         WRITE(9,102)(RAD_D_R(Index,J), J=1, NSurfcmb)   !Reflected specular distribution factors
         WRITE(10,102)(RAD_D_WR(Index,J), J=1, NSurfcmb) !Absorbed at first intersection specular distribution factors
      END DO
-
+     
      !Writing the rest of the outputs for MCOutput.txt
 102  Format(4x,100(2x,f8.6))
      Write(3,103)'Index','SURF_NAME','Temperature','Emissivity','Heat Flux', &
@@ -64,7 +65,7 @@
 
 	 Write(*,107)'Elapsed Time:',TIME2-TIME1,'s'
 	 Write(3,107)'Elapsed Time:',TIME2-TIME1,'s'
-107  Format(//,8x,A14,1x,F14.2,x,A1)
+107  Format(//,8x,A14,1x,F14.2,x,A1) 
 
   END SUBROUTINE Print_ViewFactor_HeatFlux
  END Module OutPut
