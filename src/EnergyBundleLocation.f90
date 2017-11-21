@@ -13,17 +13,23 @@ Module EnergyBundleLocation
    USE EnclosureGeometry
 
    IMPLICIT NONE
-CONTAINS
+   CONTAINS
 
    SUBROUTINE EnergySourceLocation()
 !********************************************************************************
 !
-!   Purpose:        Checks whether the surface rectangular or triangular, then calls
-!               the appropriate subroutine. If the fourth vertex index is zero
-!                                then the polygon is triangular, else it is rectangular
+!   Purpose: Checks whether the surface rectangular or triangular, then calls
+!            the appropriate subroutine. If the fourth vertex index is zero
+!            then the polygon is triangular, else it is rectangular
 !
 !********************************************************************************
       INTEGER :: I, J, K, IOS
+
+      !INTEGER, ALLOCATABLE :: OldRandSeed(:)
+      !
+      !ALLOCATE (OldRandSeed(NumSeed))
+      !
+      !Call RANDOM_SEED(GET=OldRandSeed(1:NumSeed))
       Call RANDOM_NUMBER(Rand)
       IF (PolygonIndex(SIndex) .eq. 4) Then
          CALL RectangularSurface()
@@ -36,17 +42,17 @@ CONTAINS
    SUBROUTINE TriangularSurface()
 !*******************************************************************************
 !
-!   Purpose:        Determines the location of the emitted energy on a triangular
-!               surface randomly
+!   Purpose: Determines the location of the emitted energy on a triangular
+!            surface randomly
 !
 !
 !*******************************************************************************
 !   Rand                  Normalized uniform distribution Random numbers between 0 and 1
-!   XLS                          Location of x-coordinate of the source on a particular surface
-!   YLS                          Location of y-coordinate of the source on a particular surface
-!   ZLS                          Location of z-coordinate of the source on a particular surface
-!   VS(4)                  The four vertices used to define a surface and are inputs
-!   X, Y, Z                  The coordinates of a vertex
+!   XLS                   Location of x-coordinate of the source on a particular surface
+!   YLS                   Location of y-coordinate of the source on a particular surface
+!   ZLS                   Location of z-coordinate of the source on a particular surface
+!   VS(4)                 The four vertices used to define a surface and are inputs
+!   X, Y, Z               The coordinates of a vertex
 
       IMPLICIT NONE
       INTEGER :: I, J, K, IOS
@@ -57,11 +63,9 @@ CONTAINS
 
 !  If it is a reflected energy bundle, no need to calculate the emission point
       IF (Reflected) Then
-
          XLS(SIndex) = Xo(SInter)
          YLS(SIndex) = Yo(SInter)
          ZLS(SIndex) = Zo(SInter)
-
       ELSE
          DO J = 1, 3 !Calculates emission point
             VS(J) = SVertex(SIndex, J)
@@ -93,17 +97,17 @@ CONTAINS
    SUBROUTINE RectangularSurface
 !*******************************************************************************
 !
-!   Purpose:        Calculates the location of the emitted energy on a rectangular
-!               surface randomly
+!   Purpose: Calculates the location of the emitted energy on a rectangular
+!            surface randomly
 !
 !
 !*******************************************************************************
 !   Rand                  Normalized uniform distribution Random numbers between 0 and 1
-!   XLS                          Location of x-coordinate of the source on a particular surface
-!   YLS                          Location of y-coordinate of the source on a particular surface
-!   ZLS                          Location of z-coordinate of the source on a particular surface
-!   VS(4)                  The four vertices used to define a surface and are inputs
-!   X, Y, Z                  The coordinates of a vertex
+!   XLS                   Location of x-coordinate of the source on a particular surface
+!   YLS                   Location of y-coordinate of the source on a particular surface
+!   ZLS                   Location of z-coordinate of the source on a particular surface
+!   VS(4)                 The four vertices used to define a surface and are inputs
+!   X, Y, Z               The coordinates of a vertex
 
       IMPLICIT NONE
       INTEGER :: I, J, K, IOS
@@ -190,18 +194,18 @@ CONTAINS
 !   UV_Y(3)                Unit vector along Y-direction
 !   UV_Z(3)                Unit vector along Z-direction
 !   TUV1(3)                Unit vector tangent to the source point on a surface
-!        TUV2(3)                Unit vector tangent to the source point on a surface
-!               and normal to the TUV1 tangent vector
-!                                The tangent vectors are used for reference in defining the angle
-!               Thus, need to be determined once for each surface
-!SmallestRealNo The smallest machine number
+!   TUV2(3)                Unit vector tangent to the source point on a surface and
+!                          normal to the TUV1 tangent vector
+!                          The tangent vectors are used for reference in defining the angle
+!                          Thus, need to be determined once for each surface
+!   SmallestRealNo         The smallest machine number
 !
       IMPLICIT NONE
       INTEGER :: I, J, K, IOS, INDEX
       REAL(Prec2) ::  UV_x(3), UV_y(3), UV_z(3), V(3), TUV1(3), TUV2(3), VDOT(3)
       REAL(Prec2) ::        SmallestRealNo, NV, xx
 !
-!        define the smallest machine number
+!     define the smallest machine number
       SmallestRealNo = EPSILON(0.0d0)
 !
       ALLOCATE (Tan_V1(NSurf, 3), Tan_V2(NSurf, 3), STAT=IOS)
@@ -248,15 +252,15 @@ CONTAINS
    SUBROUTINE DirectionEmittedEnergy()
 !******************************************************************************
 !
-!   PURPOSE:        Determines the direction of the emitted energy bundle
+!   PURPOSE: Determines the direction of the emitted energy bundle
 !
 !
 !******************************************************************************
 !   THETA                The angle of the emitted energy bundle makes with the normal to
-!                                the surface
-!   PHI                        Polar angle of the emitted energy bundle
-!   Rand(4)                Random number for zenith angle theta
-!   Rand(5)                Random number for azimuth angle phi
+!                        the surface
+!   PHI                  Polar angle of the emitted energy bundle
+!   Rand(4)              Random number for zenith angle theta
+!   Rand(5)              Random number for azimuth angle phi
 !
       IMPLICIT NONE
       INTEGER                :: IOS, J

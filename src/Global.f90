@@ -30,9 +30,9 @@ MODULE Global
 !
 !
    INTEGER, ALLOCATABLE, DIMENSION(:, :) :: SVertex ! Vertices of A surface
-   INTEGER, ALLOCATABLE, DIMENSION(:)   :: SNumber ! Index of a surface
-   INTEGER, ALLOCATABLE, DIMENSION(:)   :: V ! vertex Index
-   INTEGER, ALLOCATABLE, DIMENSION(:)   :: SPlane ! Plane of a Surface (x,y,z)
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: SNumber ! Index of a surface
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: V ! vertex Index
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: SPlane ! Plane of a Surface (x,y,z)
    INTEGER                                                                 :: SInter ! Index of Intercepted Surface
    INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergy ! Absorbed Energy Counter
    INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergyCMB ! Absorbed Energy Counter for
@@ -42,27 +42,27 @@ MODULE Global
    INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergyWR ! Unreflected Energy Counter, Specular
 
 !
-   INTEGER, ALLOCATABLE, DIMENSION(:) :: TCOUNTA ! Number of absorbed energy bundle
-   INTEGER, ALLOCATABLE, DIMENSION(:) :: TCOUNTR ! Number of reflected energy bundle
-   INTEGER, ALLOCATABLE, DIMENSION(:) :: TCOUNTRR ! Number of rereflected energy bundle
-   INTEGER, ALLOCATABLE, DIMENSION(:) :: NTOTAL ! Total Number of Energy bundles emitted
-   INTEGER, ALLOCATABLE, DIMENSION(:) :: NTACMB ! Total Number of Energy bundles emitted
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: TCOUNTA ! Number of absorbed energy bundle
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: TCOUNTR ! Number of reflected energy bundle
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: TCOUNTRR ! Number of rereflected energy bundle
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: NTOTAL ! Total Number of Energy bundles emitted
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: NTACMB ! Total Number of Energy bundles emitted
    ! after surface combinations
 
-   Integer, allocatable, dimension(:) :: TSpecA !Total Number of specular bundles absorbed on first bounce
-   Integer, allocatable, dimension(:) :: TSpecR !Total Number of specular bundles reflected
-   Integer, allocatable, dimension(:) :: TSpecRR !Total Number of specular bundles rereflected
+   Integer, allocatable, dimension(:)    :: TSpecA !Total Number of specular bundles absorbed on first bounce
+   Integer, allocatable, dimension(:)    :: TSpecR !Total Number of specular bundles reflected
+   Integer, allocatable, dimension(:)    :: TSpecRR !Total Number of specular bundles rereflected
 !
    INTEGER, ALLOCATABLE, DIMENSION(:, :) :: Intersection ! Surface Intersection Index
-   INTEGER, ALLOCATABLE, DIMENSION(:)   :: PolygonIndex ! 3 is Triangle, 4 is Rectangle
-   INTEGER, ALLOCATABLE, DIMENSION(:) ::        CMB ! Index for surfaces to be combined
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: PolygonIndex ! 3 is Triangle, 4 is Rectangle
+   INTEGER, ALLOCATABLE, DIMENSION(:)    :: CMB ! Index for surfaces to be combined
 
    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: EMIT ! Emissivities of surfaces
    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: TS ! surface Temperature, K
    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: BASEP ! Reference Point
-   REAL(Prec2)                                                          :: Rand(7) ! Random number (0 - 1)
-   REAL(Prec2)                                                          :: TIME1 ! Starting Time in s
-   REAL(Prec2)                                                          :: TIME2 ! Finishing Time in s
+   REAL(Prec2)                            :: Rand(7) ! Random number (0 - 1)
+   REAL(Prec2)                            :: TIME1 ! Starting Time in s
+   REAL(Prec2)                            :: TIME2 ! Finishing Time in s
 
    CHARACTER(LEN=12), ALLOCATABLE, DIMENSION(:) :: SURF_NAME ! Name of Surfaces
    CHARACTER(LEN=12), ALLOCATABLE, DIMENSION(:) :: VERTEX ! Name of Vertex
@@ -77,8 +77,8 @@ MODULE Global
    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: XP ! Intersection Point x-coordinates
    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: YP ! Intersection Point y-coordinates
    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: ZP ! Intersection Point z-coordinates
-   REAL(prec2), ALLOCATABLE, DIMENSION(:)   :: SI ! Scalar Vector Multiplier
-   REAL(prec2), ALLOCATABLE, DIMENSION(:)   :: SIPOS ! Scalar Vector Multiplier
+   REAL(prec2), ALLOCATABLE, DIMENSION(:)    :: SI ! Scalar Vector Multiplier
+   REAL(prec2), ALLOCATABLE, DIMENSION(:)    :: SIPOS ! Scalar Vector Multiplier
 !
    REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   XLS ! X coordinate of Source Location
    REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   YLS ! Y coordinate of Source Location
