@@ -60,7 +60,7 @@
      DO Index = 1, NSurf
         Write(3,104)Index,SURF_NAME(Index),TS(Index),EMIT(Index),QFLUX(Index) &
                    ,Q(Index)
-104  Format(7x,I3,8x,A12,4x,F7.2,8x,F4.2,8x,ES12.3,10x,ES12.3)
+104  Format(7x,I3,8x,A12,4x,F7.2,8x,F5.2,8x,ES12.3,10x,ES12.3)
      END DO
 
      Write(*,107)'Elapsed Time:',TIME2-TIME1,'s'

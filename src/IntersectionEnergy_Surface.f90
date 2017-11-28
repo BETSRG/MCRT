@@ -217,8 +217,8 @@
 !             Intersection(i,j)=1 if the ray emitted from the ith surface intersects the plane of
 !             the jth surface; else =0
 !             (JDS: if this only applies to the current ray, why is it stored in an array?
-!               We shouldn't even call this subroutine if it doesn't intersect.)
-!              XP,YP,ZP hold x,y,z coordinates of intersection on the plane, previously determined
+!             We shouldn't even call this subroutine if it doesn't intersect.)
+!             XP,YP,ZP hold x,y,z coordinates of intersection on the plane, previously determined
 !
 !    UNV      = Unit normal vector of the rectangular surface
 !    V_Int    = Vector from one vertex to the intersection (on plane of surface) point

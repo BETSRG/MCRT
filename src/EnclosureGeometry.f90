@@ -54,10 +54,11 @@ MODULE EnclosureGeometry
                  CMB(NSurf),EMIT(NSurf),SURF_NAME(NSurf), STAT= IOS)
     ALLOCATE(SurfaceType(NSurf),DirectionX(NSurf),DirectionY(NSurf), &  !RS: Allocating arrays for surface types and directions
             DirectionZ(NSurf),SpecReflec(NSurf),DiffReflec(NSurf))
-
-        !JH: Loop to set specular reflectances to 1 initially
+    
+        !JH: Loop to set specular reflectances to 0 initially
+        !JDS 20151109: Changed this to default value of zero; one is a poor choice.
     DO J=1,NSurf
-        SpecReflec(J)=1
+        SpecReflec(J)=0
     End Do
 !
     DO J = 1, NVertex
@@ -66,9 +67,13 @@ MODULE EnclosureGeometry
 !
     Read (2,*) SubTitle
 !
-    Do I = 1, NSurf
-        Read (2,*)SURFACE(I),SNumber(I),(SVertex(I,J),J=1,4),BASEP(I),  &
-                  CMB(I),EMIT(I),SURF_NAME(I)
+	Do I = 1, NSurf
+		Read (2,*)SURFACE(I),SNumber(I),(SVertex(I,J),J=1,4),BASEP(I),  &
+		    	  CMB(I),EMIT(I),SURF_NAME(I) 
+        !JDS 20151109: These are proper default values; these were not being set earlier.
+        SpecReflec(I)=1-EMIT(I)
+        DiffReflec(I)=1-EMIT(I)
+    
     END DO
 
     READ (2,*) SubTitle2    !RS: Deals with a second subtitle
@@ -379,17 +384,19 @@ MODULE EnclosureGeometry
    I=1  !RS: Resetting I
 
    DO I=1,NSurf
+       !JDS 20151109: the two statements in Cases SDR and sRO that set the SpecReflec to 1-SpecReflec make little sense.
+       !So I have commented them out.
     SELECTCASE(SurfaceType(I))  !RS: Dealing with the different surface cases
         CASE("SDE")
             READ(2,*)SNumber(I),SurfaceType(I), DirectionX(I), DirectionY(I), DirectionZ(I) !RS: Reading in the direction vector
         CASE("SDR")
             READ(2,*)SNumber(I),SurfaceType(I), SpecReflec(I), DiffReflec(I)    !RS: Reading in specular and diffuse reflection
-            SpecReflec(I)=1-SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
+            !SpecReflec(I)=1-SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
         CASE("DRO")
             READ(2,*)SNumber(I),SurfaceType(I) !RS: Nothing more to read in here.
         CASE("SRO")
             READ(2,*) SNumber(I),SurfaceType(I),SpecReflec(I), DiffReflec(I)    !RS: Reading in specular and diffuse reflection
-            SpecReflec(I)=1-SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
+            !SpecReflec(I)=1-SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
         CASE DEFAULT
             READ(2,*)SNumber(I),SurfaceType(I) !RS: Nothing more to read in here either
         END SELECT

@@ -35,7 +35,8 @@
     R_absorbed = Rand(6)
 !
 IF (SpIndex .eq. 1) then    !Specular energy
-     IF(R_absorbed < SpecReflec(SInter))Then
+     IF(R_absorbed < (1-SpecReflec(SInter)))Then !JDS 20151109 Assuming that the if this statement is true, the energy bundle
+                                             ! is absorbed, then the logic should be if R_absorbed < (1 - SpecReflec)
         NAEnergyS(SIndexR,SInter) = NAEnergyS(SIndexR,SInter) + 1   !RS: Total number of energy bundles absorbed
         TSpecA(SIndexR) = TSpecA(SIndexR) + 1    !RS: Total Number of energy bundles absorbed by surface
 
