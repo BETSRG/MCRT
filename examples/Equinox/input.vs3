@@ -1,0 +1,61 @@
+V 1 0 0 0
+v 2 5 0 0
+v 3 5 2.5 0
+v 4 5 5 0
+v 5 5 5 5
+v 6 5 2.5 6
+v 7 5 0 5
+v 8 0 0 5
+v 9 0 5 0
+v 10 0 2.5 6
+v 11 5 2.5 7
+v 12 0 2.5 7
+v 13 0 5 5
+v 14 3.25 2.5 6.25
+v 15 3.25 2.5 6.75
+v 16 4.75 2.5 6.75
+v 17 4.75 2.5 6.25
+v 18 0.25 2.5 6.25
+v 19 0.25 2.5 6.75
+v 20 1.75 2.5 6.75
+v 21 1.75 2.5 6.25
+v 22 5 2.5 6.25
+v 23 5 2.5 6.75
+v 24 0 2.5 6.75
+v 25 0 2.5 6.25
+v 26 0 2.5 0
+!  #   v1  v2  v3  v4 base cmb  emit  name
+S 1    1   8   7   2  0    0     0.9  face
+s 2   2    7   6   3  0    0     0.9  SE side
+s 3   3    11  5   4  0    0     0.9  NE side
+s 4   9    4   5   13 0    0     0.9  back side
+s 5   9    13  12  26 0    0     0.9  NWside
+s 6   26   10  8   1  0    0     0.9  SW side
+s 7   1    2   4   9  0    0     0.9  base
+s 8   6    7   8   10 0    0     0.9  S roof
+s 9   5   11  12  13  0    0     0.9  N roof
+s 10  11  23  24  12  0    0     0.9  Top perpend ceiling
+s 11  6   10  25  22  0    0     0.9  bottom ceiling
+s 12  18  25  24  19  0    0     0.9  W perpen
+s 13  21  20  15  14  0    0     0.9  centre perp
+s 14  22  17  16  23  0    0     0.9  E perpe
+s 15  18  19  20  21  0    0     0.9  W window
+s 16  14  15  16  17  0    0     0.9  E window
+!# Type
+1   DIF
+2   DIF
+3   DIF
+4   DIF
+5   DIF
+6   DIF
+7   DIF
+8   DIF
+9   DIF
+10  DIF
+11  DIF
+12  DIF
+13  DIF
+14  DIF
+15  SDE 0.2 0.2 -.3
+16  SDE 0.2 0.2 -.3
+End of Data
