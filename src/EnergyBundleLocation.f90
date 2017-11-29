@@ -161,20 +161,23 @@ END SUBROUTINE RectangularSurface
 SUBROUTINE InitializeSeed()
 !******************************************************************************
 !
-!   PURPOSE:    Initialization of seed for the random Number generator
+!   PURPOSE:    Initialization of seed for the random number generator
 !
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER :: K
-    INTEGER, DIMENSION(:) ::  SEEDARRAY(7), OLDSEED(7)
-    ! Sets K = N
-    K = 7
-    CALL RANDOM_SEED (SIZE = K)
-    ! Set user seed
-    CALL RANDOM_SEED (PUT = SEEDARRAY(1:K))
-    ! Get current seed
-    CALL RANDOM_SEED (GET = OLDSEED(1:K))
+    INTEGER :: i, n, clock
+    INTEGER, DIMENSION(:), ALLOCATABLE :: seed
+
+    CALL RANDOM_SEED(size = n)
+    ALLOCATE(seed(n))
+
+    CALL SYSTEM_CLOCK(COUNT=clock)
+
+    seed = clock + 104729 * (/ (i - 1, i = 1, n) /)
+    CALL RANDOM_SEED(PUT = seed)
+
+    DEALLOCATE(seed)
 END SUBROUTINE InitializeSeed
 
 SUBROUTINE TangentVectors()
@@ -273,13 +276,13 @@ SUBROUTINE DirectionEmittedEnergy()
     ALLOCATE (EmittedUV(NSurf,3), STAT = IOS )
     ! Calculate the unit vector in the direction of the emitted energy bundle
     IF (Spindex .eq. 1) THEN    !RS: For Specular Rays
-        IF (Reflected) THEN !RS: IF the rays are being reflected off of another surface
+        IF (Reflected) THEN !RS: If the rays are being reflected off of another surface
             SurfNorm(1)=NormalUV(SIndex,1)  !Surface normal unit vector
             SurfNorm(2)=NormalUV(SIndex,2)
             SurfNorm(3)=NormalUV(SIndex,3)
 
             !Taking the incoming direction from the specified emission direction
-            IF (TCountSpecR .EQ. 1) THEN  !IF the ray is being reflected for the first time
+            IF (TCountSpecR .EQ. 1) THEN  !If the ray is being reflected for the first time
                 MagVec=SQRT(DirectionX(OldSurface)**2 + DirectionY(OldSurface)**2 + DirectionZ(OldSurface)**2)
                 InVecDirec(1)=-DirectionX(OldSurface)/MagVec  !I is negative since the ray is incoming
                 InVecDirec(2)=-DirectionY(OldSurface)/MagVec
@@ -315,7 +318,7 @@ END SUBROUTINE  DirectionEmittedEnergy
 
 SUBROUTINE CheckDirection
 
-    !RS:Debugging: Trying to set direction=0 IF it doesn't exist
+    !RS:Debugging: Trying to set direction=0 if it doesn't exist
 
     IF (EmittedUV(SIndex,1) .LT. (-10E10) .OR. EmittedUV(SIndex,1) .GT. (10E10)) THEN
         EmittedUV(SIndex,1)=0

@@ -43,13 +43,13 @@ PROGRAM Main_MonteCarlo
     ! be written for use with RTVT
 
     OPEN (Unit=8, File='parameters.txt',status='old',IOSTAT = IOS)
-    READ (8,*)NBundles
+    READ (8,*) NBundles
     READ (8,*) logfileint
 
     IF (logfileint == 1) THEN
-        WriteLogFile=.true.
+        WriteLogFile = .true.
     ELSE
-        WriteLogFile=.false.
+        WriteLogFile = .false.
     ENDIF
 
     CLOSE(Unit = 8)
