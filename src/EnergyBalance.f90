@@ -19,7 +19,7 @@ SUBROUTINE Radiation_Balance
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER  :: I,J,k,Index,IOS,LWL,UPL
+    INTEGER  :: I, J, k, Index, IOS, LWL, UPL
     INTEGER, ALLOCATABLE, DIMENSION(:) :: Eb
     REAL(Prec2) :: SIGMA, EBSUM, T
 
@@ -32,11 +32,11 @@ SUBROUTINE Radiation_Balance
     !               applicable
     !   T       =   Temperature of the surfaces, K
 
-    ALLOCATE(Ts(NSurf),EB(NSurf),QFLUX(NSurf),Q(NSurf),STAT = IOS)
+    ALLOCATE(Ts(NSurf), EB(NSurf), QFLUX(NSurf), Q(NSurf), STAT = IOS)
 
     !   READ and assign surface Temperatures
     DO I = 1, NSurf
-        READ(7,*)LWL, UPL, T
+        READ(7, *)LWL, UPL, T
         IF(LWL == "0")EXIT
         DO J = LWL, UPL
             Ts(J) = T
@@ -44,18 +44,18 @@ SUBROUTINE Radiation_Balance
     END DO
 
     DO J = 1, NSurf
-        EB(J) = SIGMA*(Ts(J)**4)
+        EB(J) = SIGMA * (Ts(J)**4)
     END DO
 
-    DO I =1, NSurf
+    DO I = 1, NSurf
         EBSUM = 0.0
 
         DO J = 1, NSurf
-            EBSUM = EBSUM + RAD_D_F(I,J)*EB(J)
+            EBSUM = EBSUM + RAD_D_F(I, J) * EB(J)
         END DO
 
-        QFLUX(I) = EMIT(I)*EB(I) - EMIT(I)*EBSUM
-        Q(I) = Area(I)*QFlux(I)
+        QFLUX(I) = EMIT(I) * EB(I) - EMIT(I) * EBSUM
+        Q(I) = Area(I) * QFlux(I)
     END DO
 
 END SUBROUTINE Radiation_Balance

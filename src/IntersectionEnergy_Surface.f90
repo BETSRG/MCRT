@@ -52,9 +52,9 @@ SUBROUTINE Intersection_Points()
 !****************************************************************************
 
     IMPLICIT NONE
-    INTEGER :: I, J, K, Index,SCount, IOS, InterCount
+    INTEGER :: I, J, K, Index, SCount, IOS, InterCount
     INTEGER, DIMENSION (:) :: VS(4)
-    REAL(Prec2), DIMENSION(:) :: WV(3), UNV(3),EUV(3),W_V(3)
+    REAL(Prec2), DIMENSION(:) :: WV(3), UNV(3), EUV(3), W_V(3)
     REAL(Prec2) :: UNV_DOT_WV, UNV_DOT_EUV
     REAL(Prec2),  Dimension (:) :: X(4), Y(4), Z(4)
 
@@ -68,11 +68,11 @@ SUBROUTINE Intersection_Points()
     !    UNV_DOT_WV     Dot product of UNV and WV vectors
     !    UNV_DOT_EUV    Dot product of UNV and EUV vectors
 
-    ALLOCATE(SI(NSurf),STAT = IOS )
+    ALLOCATE(SI(NSurf), STAT = IOS)
     !  Assign surfaces their corresponding vertices and coordinates
     DO Index = 1, NSurf
         DO J = 1, 4
-            VS(J) = SVertex(Index,J)
+            VS(J) = SVertex(Index, J)
             IF(VS(4) .ne. 0 )THEN
                 X(J) = XS(VS(J))
                 Y(J) = YS(VS(J))
@@ -89,23 +89,23 @@ SUBROUTINE Intersection_Points()
     !  and the emitted energy source point
 
     IF(Index .ne. SIndex) THEN
-        WV(1) = -(XLS(SIndex) - X(1))
-        WV(2) = -(YLS(SIndex) - Y(1))
-        WV(3) = -(ZLS(SIndex) - Z(1))
+        WV(1) = - (XLS(SIndex) - X(1))
+        WV(2) = - (YLS(SIndex) - Y(1))
+        WV(3) = - (ZLS(SIndex) - Z(1))
 
         !  Determine the dot product of the surfaces unit vector and vector WV
         DO I = 1, 3
-            UNV(I) = NormalUV(Index,I)
+            UNV(I) = NormalUV(Index, I)
             W_V(I) = WV(I)
-            EUV(I) = EmittedUV(SIndex,I)
+            EUV(I) = EmittedUV(SIndex, I)
         END DO
 
-        UNV_DOT_WV  = DOT_PRODUCT(UNV,W_V)
-        UNV_DOT_EUV = DOT_PRODUCT(UNV,EUV)
-        SI(Index) = UNV_DOT_WV/UNV_DOT_EUV
+        UNV_DOT_WV  = DOT_PRODUCT(UNV, W_V)
+        UNV_DOT_EUV = DOT_PRODUCT(UNV, EUV)
+        SI(Index) = UNV_DOT_WV / UNV_DOT_EUV
 
         IF (UNV_DOT_EUV .EQ. 0) THEN
-            SI(Index)=0.0  !RS: In the case of division by 0
+            SI(Index) = 0.0  !RS: In the case of division by 0
         ENDIF
     ELSE
         SI(Index) = 0.0
@@ -132,9 +132,9 @@ SUBROUTINE SingleOutIntersection()
 !******************************************************************************
 !
     IMPLICIT NONE
-    INTEGER :: I, J, K, Index,Scount,IOS,InterCount
+    INTEGER :: I, J, K, Index, Scount, IOS, InterCount
     INTEGER, DIMENSION (:) :: VS(4)
-    REAL(Prec2), ALLOCATABLE,DIMENSION(:) :: SIINTER
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: SIINTER
     REAL(prec2) SIMIN, SIMAX
 
     !   SIMIN        the closest intersection distance
@@ -148,30 +148,30 @@ SUBROUTINE SingleOutIntersection()
     !  Calculates the vector position of the intersection point
     DO Index = 1, NSurf
         IF(Index .ne. SIndex)THEN
-            XP(SIndex,Index) = XLS(SIndex) + SI(Index)*EmittedUV(SIndex,1)
-            YP(SIndex,Index) = YLS(SIndex) + SI(Index)*EmittedUV(SIndex,2)
-            ZP(SIndex,Index) = ZLS(SIndex) + SI(Index)*EmittedUV(SIndex,3)
+            XP(SIndex, Index) = XLS(SIndex) + SI(Index) * EmittedUV(SIndex, 1)
+            YP(SIndex, Index) = YLS(SIndex) + SI(Index) * EmittedUV(SIndex, 2)
+            ZP(SIndex, Index) = ZLS(SIndex) + SI(Index) * EmittedUV(SIndex, 3)
 !
             IF(SI(Index) > 0.0)THEN
-                Intersection(SIndex,Index) = 1  !0 means no intersection, 1 means there is Inter.
+                Intersection(SIndex, Index) = 1  !0 means no intersection, 1 means there is Inter.
             ELSE
-                Intersection(SIndex,Index) = 0
+                Intersection(SIndex, Index) = 0
             ENDIF
         ELSE
-            Intersection(SIndex,Index) = 0
-            INTersects(SIndex)=.FALSE.    !RS: Setting the intersection flag to false for cases when it's the emission surface
+            Intersection(SIndex, Index) = 0
+            INTersects(SIndex) = .FALSE.    !RS: Setting the intersection flag to false for cases when it's the emission surface
         ENDIF
     END DO
 
     DO Scount = 1, NSurf
-        IF(PolygonIndex(Scount) .eq. 4 .and. Intersection(SIndex,Scount) == 1)THEN
+        IF(PolygonIndex(Scount) .eq. 4 .and. Intersection(SIndex, Scount) == 1)THEN
             CALL IntersectionRectangle(Scount)
-        ELSEIF(PolygonIndex(Scount) .eq. 3 .and. Intersection(SIndex,Scount) == 1)THEN
+        ELSEIF(PolygonIndex(Scount) .eq. 3 .and. Intersection(SIndex, Scount) == 1)THEN
             CALL IntersectionTriangle(Scount)
         ENDIF
 
         !  Eliminate intersection point on the back side of emission
-        IF(SI(Scount) > 0.0 .and. Intersection(SIndex,Scount) == 1)THen
+        IF(SI(Scount) > 0.0 .and. Intersection(SIndex, Scount) == 1)THen
             SIINTER(Scount) = SI(Scount)
         ELSE
             SIINTER(Scount) = SIMAX
@@ -182,7 +182,7 @@ SUBROUTINE SingleOutIntersection()
     SIMIN = MINVAL(SIINTER)
 
     !  Determine intersection by selecting the closest point
-    DO I =1, Nsurf
+    DO I = 1, Nsurf
         IF (INTersects(I))THEN
             IF(SIINTER(I) == SIMIN) THEN
                 SInter = I
@@ -212,11 +212,11 @@ SUBROUTINE IntersectionRectangle(Index)
 !       Index   =  index of surface that is being tested for possible intersection
 !       Note: Current ray information is stored in Global variables:
 !             Sindex: emitting (or reflecting) surface index
-!             Intersection(i,j)=1 IF the ray emitted from the ith surface intersects the plane of
-!             the jth surface; else =0
+!             Intersection(i, j) = 1 IF the ray emitted from the ith surface intersects the plane of
+!             the jth surface; else = 0
 !             (JDS: IF this only applies to the current ray, why is it stored in an array?
 !             We shouldn't even call this subroutine IF it doesn't intersect.)
-!             XP,YP,ZP hold x,y,z coordinates of intersection on the plane, previously determined
+!             XP, YP, ZP hold x, y, z coordinates of intersection on the plane, previously determined
 !
 !    UNV      = Unit normal vector of the rectangular surface
 !    V_Int    = Vector from one vertex to the intersection (on plane of surface) point
@@ -226,10 +226,10 @@ SUBROUTINE IntersectionRectangle(Index)
 !    VcpN     = Dot product of VcpS and the surface unit normal vector
 
     IMPLICIT NONE
-    INTEGER :: I, J, K, Index,SCount,IOS, count
+    INTEGER :: I, J, K, Index, SCount, IOS, count
     INTEGER, DIMENSION (:) :: VS(4)
-    REAL(Prec2),DIMENSION(:,:):: VcpS(NSurf,3),VcpN(NSurf,4)
-    REAL(Prec2),DIMENSION(:) ::  V(3),X(4),Y(4),Z(4),V_edge(3),V_Int(3),Vcp(3),UNV(3), Vedge1(3), Vedge2(3), Vedge3(3), Vedge4(3)
+    REAL(Prec2), DIMENSION(:, :):: VcpS(NSurf, 3), VcpN(NSurf, 4)
+    REAL(Prec2), DIMENSION(:) ::  V(3), X(4), Y(4), Z(4), V_edge(3), V_Int(3), Vcp(3), UNV(3), Vedge1(3), Vedge2(3), Vedge3(3), Vedge4(3)
     REAl(Prec2) SIMIN
 
     !  checks whether the point of intersection of the surface's plane is within the
@@ -238,7 +238,7 @@ SUBROUTINE IntersectionRectangle(Index)
     ! (JDS: Shouldn't this be done once globally?)
 
     DO J = 1, 4
-        VS(J) = SVertex(Index,J)
+        VS(J) = SVertex(Index, J)
         X(J) = XS(VS(J))
         Y(J) = YS(VS(J))
         Z(J) = ZS(VS(J))
@@ -250,9 +250,9 @@ SUBROUTINE IntersectionRectangle(Index)
     IF(Index .ne. SIndex) THEN
         DO J = 1, 4
             IF (J < 4 )THEN
-                V_edge(1) = (X(J+1) - X(J))
-                V_edge(2) = (Y(J+1) - Y(J))
-                V_edge(3) = (Z(J+1) - Z(J))
+                V_edge(1) = (X(J + 1) - X(J))
+                V_edge(2) = (Y(J + 1) - Y(J))
+                V_edge(3) = (Z(J + 1) - Z(J))
             ELSEIF(J == 4)THEN
                 V_edge(1) = (X(1) - X(4))
                 V_edge(2) = (Y(1) - Y(4))
@@ -261,40 +261,40 @@ SUBROUTINE IntersectionRectangle(Index)
 
             ! Determine a vector from a vertex on the surface to the intersection point on
             ! the plane of the same surface
-            V_Int(1) = XP(SIndex,Index) - X(J)
-            V_Int(2) = YP(SIndex,Index) - Y(J)
-            V_Int(3) = ZP(SIndex,Index) - Z(J)
+            V_Int(1) = XP(SIndex, Index) - X(J)
+            V_Int(2) = YP(SIndex, Index) - Y(J)
+            V_Int(3) = ZP(SIndex, Index) - Z(J)
 
-            CALL CrossProduct(V_edge, V_Int,Vcp)
+            CALL CrossProduct(V_edge, V_Int, Vcp)
 
             DO I = 1, 3
-               UNV(I) = NormalUV(Index,I)
+               UNV(I) = NormalUV(Index, I)
             END DO
 
-            VcpN(Index, J) = DOT_PRODUCT(Vcp,UNV)
+            VcpN(Index, J) = DOT_PRODUCT(Vcp, UNV)
 
             DO I = 1, 3
-                VcpS(Index,I) = Vcp(I)
+                VcpS(Index, I) = Vcp(I)
             END DO
         END DO
     ENDIF
 
     !  Eliminate intersection point outside the surface domain
-    IF(VcpN(Index,1)> 0.0 .and. VcpN(Index,4) > 0.0 .and. VcpN(Index,2)> 0.0 .and. VcpN(Index,3)> 0.0) THEN
+    IF(VcpN(Index, 1)> 0.0 .and. VcpN(Index, 4) > 0.0 .and. VcpN(Index, 2) > 0.0 .and. VcpN(Index, 3) > 0.0) THEN
         SInter = Index
         INTersects(Index) = .True.
 
     !  Save the intersection point coordinates
 
-       Xo(SInter) = XP(SIndex,Index)
-       Yo(SInter) = YP(SIndex,Index)
-       Zo(SInter) = ZP(SIndex,Index)
+       Xo(SInter) = XP(SIndex, Index)
+       Yo(SInter) = YP(SIndex, Index)
+       Zo(SInter) = ZP(SIndex, Index)
 
     ! JDS: One possible problem - IF intersection is on vertex or edge, it will be "false"
 
     ELSE
         INTersects(Index) = .false.
-        Intersection(SIndex,Index) = 0
+        Intersection(SIndex, Index) = 0
     ENDIF
 END SUBROUTINE IntersectionRectangle
 
@@ -315,26 +315,26 @@ SUBROUTINE IntersectionTriangle(Index)
 !   VcpS     = Cross product vector between the edges and intersection vector
 
     IMPLICIT NONE
-    INTEGER :: I, J, K, Index,SCount,IOS, count
+    INTEGER :: I, J, K, Index, SCount, IOS, count
     INTEGER, DIMENSION(:) :: VS(4)
-    REAL(Prec2),DIMENSION(:,:):: VcpS(NSurf,3),VcpN(NSurf,4)
-    REAL(Prec2),DIMENSION(:)::V(3),X(4),Y(4),Z(4),V_edge(3),V_Int(3),Vcp(3),UNV(3)
+    REAL(Prec2), DIMENSION(:, :):: VcpS(NSurf, 3), VcpN(NSurf, 4)
+    REAL(Prec2), DIMENSION(:)::V(3), X(4), Y(4), Z(4), V_edge(3), V_Int(3), Vcp(3), UNV(3)
 
     !  check whether the point of intersection of the surfaces is within the enclosure
     DO J = 1, 3
-        VS(J) = SVertex(Index,J)
+        VS(J) = SVertex(Index, J)
         X(J) = XS(VS(J))
         Y(J) = YS(VS(J))
         Z(J) = ZS(VS(J))
     END DO
 
     !  Determine a vector for the surface edges using the vertices of the surfaces
-    IF(Index .ne. SIndex .and.  Intersection(SIndex,Index) == 1) THEN
+    IF(Index .ne. SIndex .and.  Intersection(SIndex, Index) == 1) THEN
         DO J = 1, 3
             IF (J < 3 )THEN
-                V_edge(1) = (X(J+1) - X(J))
-                V_edge(2) = (Y(J+1) - Y(J))
-                V_edge(3) = (Z(J+1) - Z(J))
+                V_edge(1) = (X(J + 1) - X(J))
+                V_edge(2) = (Y(J + 1) - Y(J))
+                V_edge(3) = (Z(J + 1) - Z(J))
             ELSEIF(J == 3)THEN
                 V_edge(1) = (X(1) - X(3))
                 V_edge(2) = (Y(1) - Y(3))
@@ -343,38 +343,38 @@ SUBROUTINE IntersectionTriangle(Index)
 
             !  Determine a vector from a vertex on the surface to the intersection point on
             !  the plane of the same surface
-            V_Int(1) = XP(SIndex,Index) - X(J)
-            V_Int(2) = YP(SIndex,Index) - Y(J)
-            V_Int(3) = ZP(SIndex,Index) - Z(J)
+            V_Int(1) = XP(SIndex, Index) - X(J)
+            V_Int(2) = YP(SIndex, Index) - Y(J)
+            V_Int(3) = ZP(SIndex, Index) - Z(J)
 
-            CALL CrossProduct(V_edge, V_Int,Vcp)
+            CALL CrossProduct(V_edge, V_Int, Vcp)
 
             DO I = 1, 3
-                UNV(I) = NormalUV(Index,I)
+                UNV(I) = NormalUV(Index, I)
             END DO
 
-            VcpN(Index, J) = DOT_PRODUCT(Vcp,UNV)
+            VcpN(Index, J) = DOT_PRODUCT(Vcp, UNV)
 
             DO I = 1, 3
-                VcpS(Index,I) = Vcp(I)
+                VcpS(Index, I) = Vcp(I)
             END DO
         END DO
     ELSE
     ENDIF
 
     !  Eliminate intersection point outside the surface domain
-    IF(VcpN(Index,1) > 0.0 .and. VcpN(Index,2) > 0.0 .and. VcpN(Index,3) > 0.0 .and. Intersection(SIndex,Index) == 1) THEN
+    IF(VcpN(Index, 1) > 0.0 .and. VcpN(Index, 2) > 0.0 .and. VcpN(Index, 3) > 0.0 .and. Intersection(SIndex, Index) == 1) THEN
         SInter = Index
         INTersects(Index) = .True.
-        Intersection(SIndex,Index) = 1
+        Intersection(SIndex, Index) = 1
 
         !  Save the intersection point coordinates
-        Xo(SInter) = XP(SIndex,Index)
-        Yo(SInter) = YP(SIndex,Index)
-        Zo(SInter) = ZP(SIndex,Index)
+        Xo(SInter) = XP(SIndex, Index)
+        Yo(SInter) = YP(SIndex, Index)
+        Zo(SInter) = ZP(SIndex, Index)
     ELSE
         INTersects(Index) = .false.
-        Intersection(SIndex,Index) = 0
+        Intersection(SIndex, Index) = 0
     ENDIF
 END SUBROUTINE IntersectionTriangle
 

@@ -13,13 +13,13 @@ PROGRAM Main_MonteCarlo
     USE OutPut
 
     IMPLICIT NONE
-    INTEGER :: I,J,k,IOS,Index, logfileint
+    INTEGER :: I, J, k, IOS, Index, logfileint
 
     ! Initialize the CPU time
     CALL CPU_TIME(TIME1)
 
     ! Assign number of Energy Bundles emitted per surface
-    ! JDS 11-9-2006 Replace this fixed number with an input from
+    ! JDS 11 - 9 - 2006 Replace this fixed number with an input from
     ! a file, set below.
     ! NBundles = 1000000
 
@@ -28,23 +28,23 @@ PROGRAM Main_MonteCarlo
     ! For output:            MCoutput.txt
     ! For temperatures in K: input.TK
     ! For number of bundles: parameters.txt
-    OPEN (Unit=2, file='input.vs3',status='unknown',Action='READ',IOSTAT=IOS)
-    OPEN (Unit=3, file='MCoutput.txt',status='unknown',IOSTAT = IOS)    !Diffuse bundles and distribution factors
-    OPEN (Unit=4, file='logfile.out',status='unknown',IOSTAT = IOS)     !Ray emission, reflection, and absorption points
-    OPEN (Unit=7, File='input.TK',status='unknown',IOSTAT = IOS)        !Surface temperatures
-    OPEN (Unit=6, File='SpecularDF.out',status='unknown', IOSTAT=IOS)   !Total Specular bundles and distribution factors
-    OPEN (Unit=9, File='SpecReflecDF.out',status='unknown', IOSTAT=IOS) !Reflected and rereflected Specular bundles and distribution factors
-    OPEN (Unit=10, File='SpecWRDF.out',status='unknown', IOSTAT=IOS)    !Non-Reflected AKA absorbed on first intersection Specular bundles and distribution factors
-    OPEN (Unit=11, File='DebugFile.txt',status='unknown', IOSTAT=IOS)   !Lists rays that are not finding intersection points and whether they're reflected or not
+    OPEN (Unit = 2, file = 'input.vs3', status = 'unknown', Action = 'READ', IOSTAT = IOS)
+    OPEN (Unit = 3, file = 'MCoutput.txt', status = 'unknown', IOSTAT = IOS)    !Diffuse bundles and distribution factors
+    OPEN (Unit = 4, file = 'logfile.out', status = 'unknown', IOSTAT = IOS)     !Ray emission, reflection, and absorption points
+    OPEN (Unit = 7, File = 'input.TK', status = 'unknown', IOSTAT = IOS)        !Surface temperatures
+    OPEN (Unit = 6, File = 'SpecularDF.out', status = 'unknown', IOSTAT = IOS)   !Total Specular bundles and distribution factors
+    OPEN (Unit = 9, File = 'SpecReflecDF.out', status = 'unknown', IOSTAT = IOS) !Reflected and rereflected Specular bundles and distribution factors
+    OPEN (Unit = 10, File = 'SpecWRDF.out', status = 'unknown', IOSTAT = IOS)    !Non - Reflected AKA absorbed on first intersection Specular bundles and distribution factors
+    OPEN (Unit = 11, File = 'DebugFile.txt', status = 'unknown', IOSTAT = IOS)   !Lists rays that are not finding intersection points and whether they're reflected or not
 
     ! JDS 11-9-2006 READ Nbundles from file so that it can be changed
     ! without recompiling.
     ! JDS 11-20-2006 READ flag to determine whether or not logfile should
     ! be written for use with RTVT
 
-    OPEN (Unit=8, File='parameters.txt',status='old',IOSTAT = IOS)
-    READ (8,*) NBundles
-    READ (8,*) logfileint
+    OPEN (Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)
+    READ (8, *) NBundles
+    READ (8, *) logfileint
 
     IF (logfileint == 1) THEN
         WriteLogFile = .true.
@@ -93,7 +93,7 @@ PROGRAM Main_MonteCarlo
             ! IF the number of absorbed energy bundles is the same as the number
             ! of emitted energy bundles, exit the specular emission loop
 
-            IF(NTrials==NBundles) EXIT Specular
+            IF(NTrials == NBundles) EXIT Specular
             END DO Specular
 
             SpIndex = 0 !JH: This begins the diffuse ray tracing for SDE surfaces
@@ -115,11 +115,11 @@ PROGRAM Main_MonteCarlo
             !  IF the number of absorbed energy bundles is the same as the
             !  number of emitted energy bundles, exit the diffuse emission loop
 
-            IF(NTrialsd==NBundles) EXIT Diffuse1
+            IF(NTrialsd == NBundles) EXIT Diffuse1
             END DO Diffuse1
 
         ELSEIF (SurfaceType(SIndex) .EQ. "DIF" .OR. SurfaceType(SIndex) .EQ. "SDR") THEN
-            NTrialsd=0
+            NTrialsd = 0
 
             !  JH: This is the standard diffuse ray tracing
             Diffuse2:    DO
@@ -139,7 +139,7 @@ PROGRAM Main_MonteCarlo
             !  IF the number of absorbed energy bundles is the same as the
             !  number of emitted energy bundles, exit the diffuse emission loop
 
-            IF(NTrialsd==NBundles) EXIT Diffuse2
+            IF(NTrialsd == NBundles) EXIT Diffuse2
             END DO Diffuse2
         ENDIF
     END DO
@@ -160,7 +160,7 @@ PROGRAM Main_MonteCarlo
     CLOSE(Unit = 4)
     CLOSE(Unit = 7)
     CLOSE(Unit = 6)
-    CLOSE(Unit =10)
-    CLOSE(Unit =11)
+    CLOSE(Unit = 10)
+    CLOSE(Unit = 11)
     STOP
 END PROGRAM Main_MonteCarlo
