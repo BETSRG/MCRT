@@ -1,0 +1,43 @@
+V   1   8   0   0
+V   2  13   0   0
+V   3  13   8   0
+V   4   8  13   0
+V   5   0  13   0
+V   6   0   8   0
+V   7   8   8   0
+V   8   8   0   5
+V   9  13   0   5
+V  10  13   8   5
+V  11   8  13   5
+V  12   0  13   5
+V  13   0   8   5
+V  14   8   8   5
+!   #  v1  v2  v3  v4 base cmb  emit   name      surface data
+S   1   8   9   2   1   0   0   0.90   South-Wall-Bottom-(SDE)
+S   2   9  10   3   2   0   0   0.90   East-Wall
+S   3  10  11   4   3   0   0   0.99   Angle-Wall
+S   4  11  12   5   4   0   0   0.90   North-Wall
+S   5  12  13   6   5   0   0   0.90   West-Wall-Top
+S   6  13  14   7   6   0   0   0.90   South-Wall-Top
+S   7  14   8   1   7   0   0   0.90   West-Wall-Bottom
+S   8   1   2   3   7   0   0   0.90   South-Floor
+S   9   7   3   4   0   0   8   0.90   Angle-Floor
+S  10   4   5   6   7   0   8   0.90   North-Floor
+S  11  14  10   9   8   0   0   0.90   South-Ceiling
+S  12  14  11  10   0   0   11  0.90   Angle-Ceiling
+S  13  13  12  11  14   0   11  0.90   North-Ceiling
+!# Type
+1   SDE 0 1 0
+2   DIF
+3   DIF
+4   DIF
+5   DIF
+6   DIF
+7   DIF
+8   DIF
+9   DIF
+10  DIF
+11  DIF
+12  DIF
+13  DIF
+End of data
