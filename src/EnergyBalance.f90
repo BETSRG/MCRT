@@ -19,7 +19,7 @@ SUBROUTINE Radiation_Balance
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER  :: I, J, k, Index, IOS, LWL, UPL
+    INTEGER  :: I, J, K, Index, IOS, LWL, UPL
     INTEGER, ALLOCATABLE, DIMENSION(:) :: Eb
     REAL(Prec2) :: SIGMA, EBSUM, T
 

@@ -18,7 +18,7 @@ CONTAINS
 SUBROUTINE CalculateGEometry()
 
     IMPLICIT NONE
-    INTEGER :: I, J, l, Openstatus, IOS
+    INTEGER :: I, J, L, Openstatus, IOS
     CHARACTER (Len = 12)  ErrorMessage
     CHARACTER (Len = 12) :: SubTitle
     CHARACTER (Len = 3)  :: Dummy
@@ -28,7 +28,10 @@ SUBROUTINE CalculateGEometry()
     !   The filename for the vertex and surface parameters of the rectangular
     !   surface Enclosure
     !   Reads numer of vertices and number of surfaces to allocate the array's size
-    i = 0;     j = 0
+
+    i = 0
+    j = 0
+
     DO
         READ (2, *)Dummy
         IF(TRIM(Dummy) == "v" .or. TRIM(Dummy) == "V")THEN
@@ -52,6 +55,7 @@ SUBROUTINE CalculateGEometry()
 
     !JH: Loop to set specular reflectances to 0 initially
     !JDS 20151109: Changed this to default value of zero; one is a poor choice.
+
     DO J = 1, NSurf
         SpecReflec(J) = 0
     END DO
@@ -93,7 +97,7 @@ SUBROUTINE Calculate_SurfaceEquation()
 !  Cartesian coordinate system
 
     IMPLICIT NONE
-    INTEGER :: I, J, k, m, IOS
+    INTEGER :: I, J, K, M, IOS
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(Prec2),  Dimension (4) :: X, Y, Z
     REAL(Prec2), Dimension (:, :) :: V_x(SIndex, 2), V_y(SIndex, 2), V_z(SIndex, 2)
@@ -150,6 +154,7 @@ SUBROUTINE Calculate_SurfaceEquation()
              Z(J) = ZS(VS(J))
          ENDIF
     END DO
+
     ! Calculates the coefficients of the surface equation
     A(SIndex) = NormalUV(SIndex, 1)
     B(SIndex) = NormalUV(SIndex, 2)
@@ -166,7 +171,7 @@ SUBROUTINE SurfaceNormal(Vx, Vy, Vz)
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER :: I, J, k
+    INTEGER :: I, J, K
     REAL(Prec2) :: NV(SIndex), Vector(3) !Norm_V,
     REAL(Prec2), Dimension (:, :) :: Vx(SIndex, 2), Vy(SIndex, 2), Vz(SIndex, 2)
 
@@ -180,8 +185,8 @@ SUBROUTINE SurfaceNormal(Vx, Vy, Vz)
     NormalV(SIndex, 2) = Vz(SIndex, 1) * Vx(SIndex, 2) - Vx(SIndex, 1) * Vz(SIndex, 2)
     NormalV(SIndex, 3) = Vx(SIndex, 1) * Vy(SIndex, 2) - Vy(SIndex, 1) * Vx(SIndex, 2)
 
-    DO k = 1, 3
-        Vector(K) = NormalV(SIndex, k)
+    DO K = 1, 3
+        Vector(K) = NormalV(SIndex, K)
     END DO
 
     !   JDS 11 - 8 - 06 attempt to eliminate Norm_V linking problem
@@ -336,8 +341,8 @@ SUBROUTINE InitializeArrays()
 
     !  Initialize absorbed and reflected energy bundle counter arrays
     DO J = 1, NSurf
-        DO k = 1, NSurf
-            NAEnergy(J, k) = 0
+        DO K = 1, NSurf
+            NAEnergy(J, K) = 0
         END DO
         TCOUNTA(J) = 0; TCOUNTR(J) = 0; TCOUNTRR(J) = 0
     END DO

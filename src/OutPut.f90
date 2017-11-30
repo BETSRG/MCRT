@@ -12,7 +12,24 @@ MODULE OutPut
     IMPLICIT NONE
     CONTAINS
 
-    SUBROUTINE Print_ViewFactor_HeatFlux()
+SUBROUTINE Progress(Surf, TotNumSurfs)
+    ! Writes status bar
+    ! Original source from here: https://software.intel.com/en-us/forums/intel-fortran-compiler-for-linux-and-mac-os-x/topic/270155
+
+    IMPLICIT NONE
+    INTEGER(KIND = 4) :: K, Surf, TotNumSurfs, PercentComplete
+    CHARACTER(len = 17) :: bar="???% |          |"
+    PercentComplete = FLOOR(100 * REAL(Surf) / REAL(TotNumSurfs))
+    WRITE(unit = bar(1:3), fmt = "(i3)") PercentComplete
+    DO K = 1, FLOOR(10 * REAL(Surf) / REAL(TotNumSurfs))
+        bar(6 + K : 6 + K)="*"
+    END DO
+    ! print the progress bar.
+    WRITE(*, fmt = "(a1,a1,a17)") '+', CHAR(13), bar
+    RETURN
+END SUBROUTINE progress
+
+SUBROUTINE Print_ViewFactor_HeatFlux()
     !******************************************************************************
     !
     ! PURPOSE:          Prints View Factors, Radiation Heat Flux and Heat Transfer
@@ -21,7 +38,7 @@ MODULE OutPut
     !
     !******************************************************************************
     IMPLICIT NONE
-    INTEGER        :: I, J, k, Index
+    INTEGER        :: I, J, K, Index
 
     !  WRITE the Title of the Program and Output data
     WRITE(3, 101)'Monte Carlo Method', 'PURPOSE:', 'Calculates The View &
@@ -29,11 +46,11 @@ MODULE OutPut
                  Heat Flux at Each Surface'
 101 FORMAT(//, 15x, A30, ///, 14x, A25, //, 14x, A52, /, 36x, A3, /, 11x, A50, //)
 
-    DO k = 1, NSurf
-        WRITE(3, 1001)NAEnergy(k, :), TCOUNTA(k)
-        WRITE(6, 1001)NAEnergyS(k, :), TSpecA(k) !JH !Writing the number of total specular rays absorbed at each surface
-        WRITE(9, 1001)NAEnergyR(k, :), TSpecR(k) !Writing the number of reflected specular rays absorbed at each surface
-        WRITE(10, 1001)NAEnergyWR(k, :), (TSpecA(k) - TSpecR(k))   !Writing the number of specular rays absorbed on first contact at each surface
+    DO K = 1, NSurf
+        WRITE(3, 1001)NAEnergy(K, :), TCOUNTA(K)
+        WRITE(6, 1001)NAEnergyS(K, :), TSpecA(K) !JH !Writing the number of total specular rays absorbed at each surface
+        WRITE(9, 1001)NAEnergyR(K, :), TSpecR(K) !Writing the number of reflected specular rays absorbed at each surface
+        WRITE(10, 1001)NAEnergyWR(K, :), (TSpecA(K) - TSpecR(K))   !Writing the number of specular rays absorbed on first contact at each surface
     END DO
 
 1001 FORMAT(2x, 100(x, I8), I10)

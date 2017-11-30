@@ -18,13 +18,13 @@ SUBROUTINE Rad_Distribution_Factors
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER :: I, J, k, l, m, Index, IOS, NEACMB, NAreaCMB, N_C_S_CMB
+    INTEGER :: I, J, K, L, M, Index, IOS, NEACMB, NAreaCMB, N_C_S_CMB
     INTEGER, ALLOCATABLE, DIMENSION(:) :: NTA, NTR, NTRR, NTRcmb, NTRRcmb, CMBCOUNT
     INTEGER, ALLOCATABLE, DIMENSION(:) :: CMBSURFS, ICOMBSURF, COMBSURF
     INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergyDummy
 
     !    NTA         =    Number of total energy bundles absorbed in the enclosure
-    !                     for an energy emitted from a given surface
+    !                     for an energy bundles emitted from a given surface
     !    NTR         =    Number of total energy bundles reflected in the enclosure
     !                     for energy bundles emitted from a given surface
     !
@@ -41,8 +41,8 @@ SUBROUTINE Rad_Distribution_Factors
 
     !   Identify number of surface combinations
     DO J = 1, NSurf
-        DO m = 1, NSurf
-            IF (J == CMB(m))THEN
+        DO M = 1, NSurf
+            IF (J == CMB(M))THEN
                 N_SCMB = N_SCMB + 1
             ENDIF
         END DO
@@ -62,14 +62,14 @@ SUBROUTINE Rad_Distribution_Factors
         NTA(I) = TCOUNTA(I)
     END DO
 
-    DO m = 1, NSurfcmb
+    DO M = 1, NSurfcmb
         DO J = 1, NSurfcmb
-            NAEnergyCMB(m, J) = 0
+            NAEnergyCMB(M, J) = 0
         END DO
 
-        NTAcmb(m) = 0
-        NTRcmb(m) = 0
-        NTRRcmb(m) = 0
+        NTAcmb(M) = 0
+        NTRcmb(M) = 0
+        NTRRcmb(M) = 0
     END DO
 
     DO I = 1, NSurf  !Distribution Factors for Diffuse Rays
@@ -107,7 +107,7 @@ SUBROUTINE Rad_Distribution_Factors
             IF ((REAL(TSpecA(I)) - REAL(TSpecR(I))) .EQ. 0) THEN
                 RAD_D_WR(I, Index) = 0.0000
             ELSE
-                RAD_D_WR(I, Index) = NAEnergyWR(I, Index) / (REAL(TSPecA(I)) - REAL(TSpecR(I))) !RS: NAEnergyWR is non - reflected energy
+                RAD_D_WR(I, Index) = NAEnergyWR(I, Index) / (REAL(TSpecA(I)) - REAL(TSpecR(I))) !RS: NAEnergyWR is non - reflected energy
             ENDIF
         END DO
     END DO

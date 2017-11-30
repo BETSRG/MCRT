@@ -27,41 +27,41 @@ SAVE
                                            ! 1 rereflected
     INTEGER :: N_SCMB                      ! Number of surfaces combined in the enclosure.
     INTEGER :: SpIndex                     !JH: Specular Index, 1 for specular Radiation, 0 for diffuse
-    INTEGER :: TCountSpecR                !RS: Determines whether or not a reflected ray is absorbed
+    INTEGER :: TCountSpecR                 !RS: Determines whether or not a reflected ray is absorbed
 
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: SVertex         ! Vertices of A surface
+    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: SVertex        ! Vertices of A surface
     INTEGER , ALLOCATABLE, DIMENSION(:)   :: SNumber         ! Index of a surface
     INTEGER , ALLOCATABLE, DIMENSION(:)   :: V               ! vertex Index
     INTEGER , ALLOCATABLE, DIMENSION(:)   :: SPlane          ! Plane of a Surface (x, y, z)
-    INTEGER                              :: SInter          ! Index of Intercepted Surface
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergy        ! Absorbed Energy Counter
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyCMB     ! Absorbed Energy Counter for
-                                                            !combined surfaces
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyS       ! Total Absorbed Energy Counter, Specular
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyR       ! Reflected and rereflected Energy Counter, Specular
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyWR      ! Unreflected Energy Counter, Specular
+    INTEGER                              :: SInter           ! Index of Intercepted Surface
+    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergy       ! Absorbed Energy Counter
+    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyCMB    ! Absorbed Energy Counter for
+                                                             !combined surfaces
+    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyS      ! Total Absorbed Energy Counter, Specular
+    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyR      ! Reflected and rereflected Energy Counter, Specular
+    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyWR     ! Unreflected Energy Counter, Specular
 
     INTEGER , ALLOCATABLE, DIMENSION(:) :: TCOUNTA       ! Number of absorbed energy bundle
     INTEGER , ALLOCATABLE, DIMENSION(:) :: TCOUNTR       ! Number of reflected energy bundle
     INTEGER , ALLOCATABLE, DIMENSION(:) :: TCOUNTRR      ! Number of rereflected energy bundle
     INTEGER , ALLOCATABLE, DIMENSION(:) :: NTOTAL        ! Total Number of Energy bundles emitted
     INTEGER , ALLOCATABLE, DIMENSION(:) :: NTACMB        ! Total Number of Energy bundles emitted
-                                                        ! after surface combinations
+                                                         ! after surface combinations
 
     INTEGER, allocatable, dimension(:) :: TSpecA         !Total Number of specular bundles absorbed on first bounce
     INTEGER, allocatable, dimension(:) :: TSpecR         !Total Number of specular bundles reflected
-    INTEGER, allocatable, dimension(:) :: TSpecRR       !Total Number of specular bundles rereflected
+    INTEGER, allocatable, dimension(:) :: TSpecRR        !Total Number of specular bundles rereflected
 
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: Intersection    ! Surface Intersection Index
+    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: Intersection   ! Surface Intersection Index
     INTEGER , ALLOCATABLE, DIMENSION(:)   :: PolygonIndex    ! 3 is Triangle, 4 is Rectangle
     INTEGER , ALLOCATABLE, DIMENSION(:) ::    CMB            ! Index for surfaces to be combined
 
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: EMIT           ! Emissivities of surfaces
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: TS             ! surface Temperature, K
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: BASEP          ! Reference Point
-    REAL(Prec2)                              :: Rand(7)     ! Random number (0 - 1)
-    REAL(Prec2)                              :: TIME1       ! Starting Time in s
-    REAL(Prec2)                              :: TIME2       ! Finishing Time in s
+    REAL(Prec2)                              :: Rand(7)      ! Random number (0 - 1)
+    REAL(Prec2)                              :: TIME1        ! Starting Time in s
+    REAL(Prec2)                              :: TIME2        ! Finishing Time in s
 
     CHARACTER (LEN = 12), ALLOCATABLE, DIMENSION(:) :: SURF_NAME   ! Name of Surfaces
     CHARACTER (LEN = 12), ALLOCATABLE, DIMENSION(:) :: VERTEX      ! Name of Vertex
@@ -71,11 +71,11 @@ SAVE
     LOGICAL, ALLOCATABLE, DIMENSION(:) :: INTersects ! Surface INtersection Flag
     LOGICAL :: WriteLogFile                          ! Flag to indicate whether log file
                                                      ! should be written.
-                                                     ! JDS 11 - 10 - 2006
+                                                     ! JDS 11-10-2006
 
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: XP      ! Intersection Point x - coordinates
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: YP      ! Intersection Point y - coordinates
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: ZP      ! Intersection Point z - coordinates
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: XP     ! Intersection Point x - coordinates
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: YP     ! Intersection Point y - coordinates
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: ZP     ! Intersection Point z - coordinates
     REAL(prec2), ALLOCATABLE, DIMENSION(:)   :: SI      ! Scalar Vector Multiplier
     REAL(prec2), ALLOCATABLE, DIMENSION(:)   :: SIPOS   ! Scalar Vector Multiplier
 

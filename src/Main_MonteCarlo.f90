@@ -13,7 +13,7 @@ PROGRAM Main_MonteCarlo
     USE OutPut
 
     IMPLICIT NONE
-    INTEGER :: I, J, k, IOS, Index, logfileint
+    INTEGER :: I, J, K, IOS, Index, logfileint
 
     ! Initialize the CPU time
     CALL CPU_TIME(TIME1)
@@ -43,6 +43,7 @@ PROGRAM Main_MonteCarlo
     ! be written for use with RTVT
 
     OPEN (Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)
+
     READ (8, *) NBundles
     READ (8, *) logfileint
 
@@ -54,21 +55,28 @@ PROGRAM Main_MonteCarlo
 
     CLOSE(Unit = 8)
 
+    WRITE(*, *) "Loading Geometry"
     CALL CalculateGeometry()
+
+    WRITE(*, *) "Initializing Variables"
     CALL InitializeSeed()
     CALL AllocateArrays()
     CALL InitializeArrays()
 
+    WRITE(*, *) "Calculating Surface Areas"
     DO SIndex = 1, NSurf
         CALL Calculate_SurfaceEquation()
         CALL Calculate_Area_Surfaces()
         CALL TangentVectors()
     END DO
 
-    !  Initialize the logical variable for the first emitted energy bundle
+    ! Initialize the logical variable for the first emitted energy bundle
     Reflected = .False.
 
+    WRITE(*, *) "Evaluating Surface Energy Bundles"
+
     DO SIndexR = 1, NSurf
+
         SIndex  = SIndexR
 
         !  The counter only counts the emitted and absorbed energy
@@ -142,13 +150,21 @@ PROGRAM Main_MonteCarlo
             IF(NTrialsd == NBundles) EXIT Diffuse2
             END DO Diffuse2
         ENDIF
+
+        ! Update progress bar
+        CALL Progress(SIndexR, NSurf)
+
     END DO
 
     !  Calculate the radiation distribution factor
+    WRITE(*, *) "Calculating Distribution Factors"
     CALL Rad_Distribution_Factors()
 
     !  Calculate the heat balance of the enclosure
+    WRITE(*, *) "Evaluating Radiation Balance"
     CALL Radiation_Balance
+
+    WRITE(*, *) "Simulaton Complete"
 
     !  Calculate the CPU Time
     CALL CPU_TIME(TIME2)
@@ -156,10 +172,13 @@ PROGRAM Main_MonteCarlo
     !  WRITE Results to a file
     CALL Print_ViewFactor_HeatFlux
 
+    CLOSE(UNIT = 2)
     CLOSE(Unit = 3)
     CLOSE(Unit = 4)
-    CLOSE(Unit = 7)
     CLOSE(Unit = 6)
+    CLOSE(Unit = 7)
+    CLOSE(Unit = 8)
+    CLOSE(Unit = 9)
     CLOSE(Unit = 10)
     CLOSE(Unit = 11)
     STOP
