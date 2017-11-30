@@ -41,19 +41,16 @@ PROGRAM Main_MonteCarlo
     ! without recompiling.
     ! JDS 11-20-2006 READ flag to determine whether or not logfile should
     ! be written for use with RTVT
-
     OPEN (Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)
-
     READ (8, *) NBundles
     READ (8, *) logfileint
+    CLOSE(Unit = 8)
 
     IF (logfileint == 1) THEN
         WriteLogFile = .true.
     ELSE
         WriteLogFile = .false.
     ENDIF
-
-    CLOSE(Unit = 8)
 
     WRITE(*, *) "Loading Geometry"
     CALL CalculateGeometry()
@@ -177,7 +174,6 @@ PROGRAM Main_MonteCarlo
     CLOSE(Unit = 4)
     CLOSE(Unit = 6)
     CLOSE(Unit = 7)
-    CLOSE(Unit = 8)
     CLOSE(Unit = 9)
     CLOSE(Unit = 10)
     CLOSE(Unit = 11)

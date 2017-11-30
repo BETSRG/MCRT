@@ -62,11 +62,11 @@ SUBROUTINE Print_ViewFactor_HeatFlux()
 
 1002 FORMAT(//)
 
-     DO Index = 1, NSurf
-        WRITE(3, 102)(RAD_D_F(Index, J), J = 1, NSurfcmb)   !Diffuse distribution factors
-        WRITE(6, 102)(RAD_D_S(Index, J), J = 1, NSurfcmb)   !Total specular distribution factors
-        WRITE(9, 102)(RAD_D_R(Index, J), J = 1, NSurfcmb)   !Reflected specular distribution factors
-        WRITE(10, 102)(RAD_D_WR(Index, J), J = 1, NSurfcmb) !Absorbed at first intersection specular distribution factors
+     DO Index = 1, NSurf_cmb
+        WRITE(3, 102)(RAD_D_F(Index, J), J = 1, NSurf_cmb)   !Diffuse distribution factors
+        WRITE(6, 102)(RAD_D_S(Index, J), J = 1, NSurf_cmb)   !Total specular distribution factors
+        WRITE(9, 102)(RAD_D_R(Index, J), J = 1, NSurf_cmb)   !Reflected specular distribution factors
+        WRITE(10, 102)(RAD_D_WR(Index, J), J = 1, NSurf_cmb) !Absorbed at first intersection specular distribution factors
      END DO
 
      !Writing the rest of the outputs for MCOutput.txt

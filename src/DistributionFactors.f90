@@ -18,26 +18,17 @@ SUBROUTINE Rad_Distribution_Factors
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER :: I, J, K, L, M, Index, IOS, NEACMB, NAreaCMB, N_C_S_CMB
-    INTEGER, ALLOCATABLE, DIMENSION(:) :: NTA, NTR, NTRR, NTRcmb, NTRRcmb, CMBCOUNT
-    INTEGER, ALLOCATABLE, DIMENSION(:) :: CMBSURFS, ICOMBSURF, COMBSURF
-    INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergyDummy
+    INTEGER :: I, J, K, L, M, Index, IOS
+    INTEGER, ALLOCATABLE, DIMENSION(:) :: NumEmitted, NumReflected, NumReReflec, NumEmitted_cmb, NumReflected_cmb, NumReReflect_cmb
 
-    !    NTA         =    Number of total energy bundles absorbed in the enclosure
-    !                     for an energy bundles emitted from a given surface
-    !    NTR         =    Number of total energy bundles reflected in the enclosure
-    !                     for energy bundles emitted from a given surface
-    !
-    !    NTRR        =    Number of energy bundles rereflected in the enclosure
-    !                     for energy bundles emitted from a given surface
-    !    NTAcmb      =    Number of total energy bundles absorbed in the enclosure
-    !                     for energy bundles emitted from a given surface after
-    !                     surface combination
-    !    NTRcmb      =    Number of energy bundles reflected in the enclosure
-    !                     for energy bundles emitted from a given surface after
-    !                     surface combination
+    !   NumEmitted          =    Number of total energy bundles emitted from a given surface
+    !   NumReflected        =    Number of total energy bundles reflected from a given surface
+    !   NumReReflec         =    Number of energy bundles rereflected rom a given surface
+    !   NumEmitted_cmb      =    Number of total energy bundles emitted from a given surface after surface combination
+    !   NumReflected_cmb    =    Number of energy bundles reflected ifrom a given surface after surface combination
+    !   NumReReflect_cmb    = Number of energy bundles rereflected rom a given surface after surface combination
 
-    ALLOCATE (NTA(NSurf), NTR(NSurf), NTRR(NSurf), COMBSURF(NSurf), NAEnergyDummy(NSurf, NSurf), STAT = IOS)
+    ALLOCATE (NumEmitted(NSurf), NumReflected(NSurf), NumReReflec(NSurf), STAT = IOS)
 
     !   Identify number of surface combinations
     DO J = 1, NSurf
@@ -48,36 +39,57 @@ SUBROUTINE Rad_Distribution_Factors
         END DO
     END DO
 
-    NSurfcmb = NSurf - N_SCMB        ! Number of Surfaces after combined
+    NSurf_cmb = NSurf - N_SCMB        ! Number of Surfaces after combined
 
-    ALLOCATE (NTAcmb(NSurfcmb), NTRcmb(NSurfcmb), NTRRcmb(NSurfcmb), NAEnergyCMB(NSurfcmb, NSurfcmb), CMBCOUNT(NSurfcmb), ICOMBSURF(N_SCMB), CMBSURFS(N_SCMB), AreaCMB(NSurfcmb), STAT = IOS)
-
-    DO I = 1, NSurf
-        NTA(I) = 0
-        NTR(I) = 0
-        NTRR(I) = 0
-    END DO
+    ALLOCATE(NumEmitted_cmb(NSurf_cmb), NumReflected_cmb(NSurf_cmb), NumReReflect_cmb(NSurf_cmb), STAT = IOS)
+    ALLOCATE(RAD_D_F(NSurf_cmb, NSurf_cmb), RAD_D_S(NSurf_cmb, NSurf_cmb), RAD_D_R(NSurf_cmb, NSurf_cmb), RAD_D_WR(NSurf_cmb, NSurf_cmb), STAT = IOS)
 
     DO I = 1, NSurf
-        NTA(I) = TCOUNTA(I)
+        NumEmitted(I) = 0
+        NumReflected(I) = 0
+        NumReReflec(I) = 0
     END DO
 
-    DO M = 1, NSurfcmb
-        DO J = 1, NSurfcmb
-            NAEnergyCMB(M, J) = 0
+    DO I = 1, NSurf_cmb
+        NumEmitted(I) = 0
+        NumReflected(I) = 0
+        NumReReflec(I) = 0
+    END DO
+
+    ! Combine count
+    DO J = 1, NSurf
+        DO I = 1, NSurf
+            IF (J == CMB(I)) THEN
+                NumEmitted_cmb(J) = NumEmitted_cmb(J) + TCOUNTA(I)
+            ENDIF
         END DO
 
-        NTAcmb(M) = 0
-        NTRcmb(M) = 0
-        NTRRcmb(M) = 0
+        IF (CMB(J) .gt. 0) THEN
+            NumEmitted(J) = 0
+        ELSE
+            NumEmitted(J) = TCOUNTA(J)
+        ENDIF
     END DO
+
+    ! Now combine rows
+
+
+    !DO M = 1, NSurf_cmb
+    !    DO J = 1, NSurf_cmb
+    !        NAEnergyCMB(M, J) = 0
+    !    END DO
+    !
+    !    NumEmitted_cmb(M) = 0
+    !    NumReflected_cmb(M) = 0
+    !    NumReReflect_cmb(M) = 0
+    !END DO
 
     DO I = 1, NSurf  !Distribution Factors for Diffuse Rays
         DO Index = 1, NSurf
-            IF (REAL(NTA(I)) .EQ. 0) THEN
+            IF (REAL(NumEmitted(I)) .EQ. 0) THEN
                 RAD_D_F(I, Index) = 0.0000
             ELSE
-                RAD_D_F(I, Index) = NAEnergy(I, Index) / REAL(NTA(I))
+                RAD_D_F(I, Index) = NAEnergy(I, Index) / REAL(NumEmitted(I))
             ENDIF
         END DO
     END DO

@@ -308,7 +308,7 @@ SUBROUTINE AllocateArrays()
     INTEGER :: I !Loop counter
     INTEGER :: J !Loop counter
 
-    ALLOCATE(NAEnergy(NSurf, NSurf), RAD_D_F(NSurf, NSurf), RAD_D_S(NSurf, NSurf), RAD_D_R(Nsurf, NSurf), RAD_D_WR(NSurf, NSurf), STAT = IOS )
+    ALLOCATE(NAEnergy(NSurf, NSurf))
     ALLOCATE(TCOUNTA(NSurf), TCOUNTR(NSurf), TCOUNTRR(NSurf), NTOTAL(NSurf), STAT = IOS)
     ALLOCATE(XLS(NSurf), YLS(NSurf), ZLS(NSurf), STAT = IOS)
     ALLOCATE(XP(NSurf, NSurf), YP(NSurf, NSurf), ZP(NSurf, NSurf), Intersection(NSurf, NSurf), STAT = IOS)

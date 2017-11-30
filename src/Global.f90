@@ -16,30 +16,27 @@ SAVE
     INTEGER :: out                         ! Unit Number for Output file
     INTEGER :: In                          ! Unit number for inout file
     INTEGER :: NSurf                       ! Number of Surfaces
-    INTEGER :: NSurfcmb                    ! Number of Surfaces after combination
+    INTEGER :: NSurf_cmb                   ! Number of Surfaces after combination
     INTEGER :: NTrials                     ! Number of Specular Trials
     INTEGER :: NTrialsD                    ! Number of Diffuse Trials
     INTEGER :: SIndex                      ! Surface counting Index
     INTEGER :: SIndexR                     ! Surface counting Index Reference
     INTEGER :: NVertex                     ! Number of Vertices
     INTEGER :: NBundles                    ! Number of Energy Bundles Emitted
-    INTEGER :: REF_IND                     ! One Reflection or rereflection index, 0 reflected or
-                                           ! 1 rereflected
+    INTEGER :: REF_IND                     ! One Reflection or rereflection index, 0 reflected or 1 rereflected
     INTEGER :: N_SCMB                      ! Number of surfaces combined in the enclosure.
     INTEGER :: SpIndex                     !JH: Specular Index, 1 for specular Radiation, 0 for diffuse
     INTEGER :: TCountSpecR                 !RS: Determines whether or not a reflected ray is absorbed
 
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: SVertex        ! Vertices of A surface
-    INTEGER , ALLOCATABLE, DIMENSION(:)   :: SNumber         ! Index of a surface
-    INTEGER , ALLOCATABLE, DIMENSION(:)   :: V               ! vertex Index
-    INTEGER , ALLOCATABLE, DIMENSION(:)   :: SPlane          ! Plane of a Surface (x, y, z)
-    INTEGER                              :: SInter           ! Index of Intercepted Surface
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergy       ! Absorbed Energy Counter
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyCMB    ! Absorbed Energy Counter for
-                                                             !combined surfaces
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyS      ! Total Absorbed Energy Counter, Specular
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyR      ! Reflected and rereflected Energy Counter, Specular
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: NAEnergyWR     ! Unreflected Energy Counter, Specular
+    INTEGER , ALLOCATABLE, DIMENSION(:, :)  :: SVertex      ! Vertices of A surface
+    INTEGER , ALLOCATABLE, DIMENSION(:)     :: SNumber      ! Index of a surface
+    INTEGER , ALLOCATABLE, DIMENSION(:)     :: V            ! vertex Index
+    INTEGER , ALLOCATABLE, DIMENSION(:)     :: SPlane       ! Plane of a Surface (x, y, z)
+    INTEGER                                 :: SInter       ! Index of Intercepted Surface
+    INTEGER , ALLOCATABLE, DIMENSION(:, :)  :: NAEnergy     ! Absorbed Energy Counter
+    INTEGER , ALLOCATABLE, DIMENSION(:, :)  :: NAEnergyS    ! Total Absorbed Energy Counter, Specular
+    INTEGER , ALLOCATABLE, DIMENSION(:, :)  :: NAEnergyR    ! Reflected and rereflected Energy Counter, Specular
+    INTEGER , ALLOCATABLE, DIMENSION(:, :)  :: NAEnergyWR   ! Unreflected Energy Counter, Specular
 
     INTEGER , ALLOCATABLE, DIMENSION(:) :: TCOUNTA       ! Number of absorbed energy bundle
     INTEGER , ALLOCATABLE, DIMENSION(:) :: TCOUNTR       ! Number of reflected energy bundle
@@ -52,9 +49,9 @@ SAVE
     INTEGER, allocatable, dimension(:) :: TSpecR         !Total Number of specular bundles reflected
     INTEGER, allocatable, dimension(:) :: TSpecRR        !Total Number of specular bundles rereflected
 
-    INTEGER , ALLOCATABLE, DIMENSION(:, :) :: Intersection   ! Surface Intersection Index
-    INTEGER , ALLOCATABLE, DIMENSION(:)   :: PolygonIndex    ! 3 is Triangle, 4 is Rectangle
-    INTEGER , ALLOCATABLE, DIMENSION(:) ::    CMB            ! Index for surfaces to be combined
+    INTEGER , ALLOCATABLE, DIMENSION(:, :)  :: Intersection     ! Surface Intersection Index
+    INTEGER , ALLOCATABLE, DIMENSION(:)     :: PolygonIndex     ! 3 is Triangle, 4 is Rectangle
+    INTEGER , ALLOCATABLE, DIMENSION(:)     ::    CMB           ! Index for surfaces to be combined
 
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: EMIT           ! Emissivities of surfaces
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: TS             ! surface Temperature, K
@@ -98,7 +95,10 @@ SAVE
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  EmittedUV  ! Unit Vector of emitted energy
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  Tan_V1     ! Unit Vector tangent to the source S
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  Tan_V2     ! Unit Vector tangent to the source S
+
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_F    ! Diffuse Radiation Distribution Factor
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_F_cmb ! Diffuse Radiation Distribution Factor for combined surfaces
+
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_S    ! Specular Radiation Distribution Factor
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_R    ! Reflected Specular Radiation Distribution Factor
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_WR   ! Non-Reflected Specular Radiation Distribution Factor
@@ -107,7 +107,6 @@ SAVE
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   LENGTH       ! Length of a surface
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   HEIGHT       ! Height of a surface
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   Area         ! Area of a Surface
-    REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   AreaCMB      ! Area of a Surface after combined
 
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   A            ! Coefficient of X in Surface equation
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   B            ! Coefficient of Y in Surface equation
