@@ -51,14 +51,14 @@ SAVE
 
     INTEGER , ALLOCATABLE, DIMENSION(:, :)  :: Intersection     ! Surface Intersection Index
     INTEGER , ALLOCATABLE, DIMENSION(:)     :: PolygonIndex     ! 3 is Triangle, 4 is Rectangle
-    INTEGER , ALLOCATABLE, DIMENSION(:)     ::    CMB           ! Index for surfaces to be combined
+    INTEGER , ALLOCATABLE, DIMENSION(:)     :: CMB              ! Index for surfaces to be combined
 
-    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: EMIT           ! Emissivities of surfaces
-    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: TS             ! surface Temperature, K
-    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: BASEP          ! Reference Point
-    REAL(Prec2)                              :: Rand(7)      ! Random number (0 - 1)
-    REAL(Prec2)                              :: TIME1        ! Starting Time in s
-    REAL(Prec2)                              :: TIME2        ! Finishing Time in s
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:)  :: EMIT         ! Emissivities of surfaces
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:)  :: TS           ! surface Temperature, K
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:)  :: BASEP        ! Reference Point
+    REAL(Prec2)                             :: Rand(7)      ! Random number (0 - 1)
+    REAL(Prec2)                             :: TIME1        ! Starting Time in s
+    REAL(Prec2)                             :: TIME2        ! Finishing Time in s
 
     CHARACTER (LEN = 12), ALLOCATABLE, DIMENSION(:) :: SURF_NAME   ! Name of Surfaces
     CHARACTER (LEN = 12), ALLOCATABLE, DIMENSION(:) :: VERTEX      ! Name of Vertex
@@ -96,12 +96,17 @@ SAVE
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  Tan_V1     ! Unit Vector tangent to the source S
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  Tan_V2     ! Unit Vector tangent to the source S
 
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_F    ! Diffuse Radiation Distribution Factor
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_F     ! Diffuse Radiation Distribution Factor
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_F_cmb ! Diffuse Radiation Distribution Factor for combined surfaces
 
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_S    ! Specular Radiation Distribution Factor
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_R    ! Reflected Specular Radiation Distribution Factor
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_WR   ! Non-Reflected Specular Radiation Distribution Factor
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_S     ! Specular Radiation Distribution Factor
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_S_cmb ! Specular Radiation Distribution Factor for combined surfaces
+
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_R     ! Reflected Specular Radiation Distribution Factor
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_R_cmb ! Reflected Specular Radiation Distribution Factor for combined surfaces
+
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_WR     ! Non-Reflected Specular Radiation Distribution Factor
+    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) ::  RAD_D_WR_cmb ! Non-Reflected Specular Radiation Distribution Factor for combined surfaces
 
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   WIDTH        ! width of a surface
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   LENGTH       ! Length of a surface

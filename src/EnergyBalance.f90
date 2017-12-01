@@ -23,7 +23,7 @@ SUBROUTINE Radiation_Balance
     INTEGER, ALLOCATABLE, DIMENSION(:) :: Eb
     REAL(Prec2) :: SIGMA, EBSUM, T
 
-    SIGMA = 5.67E-8    ! Stephane Boltzmann constant
+    SIGMA = 5.67E-8    ! Stephan Boltzmann constant
     !   EBSUM   =   Is product sum of emissivities and balck body emissive power
     !               For each surface
     !   LWL     =   The lower surface index for which the temperatures to read is
@@ -34,10 +34,10 @@ SUBROUTINE Radiation_Balance
 
     ALLOCATE(Ts(NSurf), EB(NSurf), QFLUX(NSurf), Q(NSurf), STAT = IOS)
 
-    !   READ and assign surface Temperatures
+    ! Read and assign surface temperatures
     DO I = 1, NSurf
         READ(7, *)LWL, UPL, T
-        IF(LWL == "0")EXIT
+        IF(LWL == 0)EXIT
         DO J = LWL, UPL
             Ts(J) = T
         END DO
