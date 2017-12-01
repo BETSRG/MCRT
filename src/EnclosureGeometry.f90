@@ -21,7 +21,7 @@ SUBROUTINE CalculateGEometry()
     INTEGER :: I, J, L, Openstatus, IOS
     CHARACTER (Len = 12)  ErrorMessage
     CHARACTER (Len = 12) :: SubTitle
-    CHARACTER (Len = 3)  :: Dummy
+    CHARACTER (Len = 3)  :: SurfVertCommentIndicator
     LOGICAL ReadFile
     CHARACTER (LEN = 12) :: SubTitle2   !RS: Second subtitle
 
@@ -29,19 +29,19 @@ SUBROUTINE CalculateGEometry()
     !   surface Enclosure
     !   Reads numer of vertices and number of surfaces to allocate the array's size
 
-    i = 0
-    j = 0
+    I = 0
+    J = 0
 
     DO
-        READ (2, *)Dummy
-        IF(TRIM(Dummy) == "v" .or. TRIM(Dummy) == "V")THEN
-            i = i + 1
-        ELSEIF(TRIM(Dummy) == "!" )THEN
-            NVertex = i
-        ELSEIF(TRIM(Dummy) == "s" .or. TRIM(Dummy) == "S")THEN
-            j = j + 1
+        READ (2, *) SurfVertCommentIndicator
+        IF (TRIM(SurfVertCommentIndicator) == "v" .or. TRIM(SurfVertCommentIndicator) == "V") THEN
+            I = I + 1
+        ELSE IF (TRIM(SurfVertCommentIndicator) == "!" ) THEN
+            NVertex = I
+        ELSE IF (TRIM(SurfVertCommentIndicator) == "s" .or. TRIM(SurfVertCommentIndicator) == "S") THEN
+            J = J + 1
         ELSE
-            NSurf = j
+            NSurf = J
             EXIT
         ENDIF
     END DO
@@ -60,20 +60,44 @@ SUBROUTINE CalculateGEometry()
         SpecReflec(J) = 0
     END DO
 
+201 FORMAT(A1, ' ', I2, 3(' ', f6.3))
+
     DO J = 1, NVertex
         READ (2, *)Vertex(J), V(J), XS(J), YS(J), ZS(J)
+        IF (WriteLogFile) THEN
+            WRITE(4, 201, ADVANCE = 'YES') Vertex(J), V(J), XS(J), YS(J), ZS(J)
+        END IF
     END DO
 
     READ (2, *) SubTitle
 
+202 FORMAT(A44)
+
+    IF (WriteLogFile) THEN
+        WRITE(4, 202) '!   #  v1  v2  v3  v4  base  cmb  emit  name'
+    END IF
+
+203 FORMAT(A1, 5('  ', I2), 1('  ',f6.3), 1('  ',I2), 1('  ',f6.3), A15)
+
 	DO I = 1, NSurf
 		READ (2, *)SURFACE(I), SNumber(I), (SVertex(I, J), J = 1, 4), BASEP(I), CMB(I), EMIT(I), SURF_NAME(I)
+
+        IF (WriteLogFile) THEN
+            WRITE(4, 203) SURFACE(I), SNumber(I), (SVertex(I, J), J = 1, 4), BASEP(I), CMB(I), EMIT(I), SURF_NAME(I)
+        END IF
+
         !JDS 20151109: These are proper default values; these were not being set earlier.
         SpecReflec(I) = 1 - EMIT(I)
         DiffReflec(I) = 1 - EMIT(I)
     END DO
 
     READ (2, *) SubTitle2    !RS: Deals with a second subtitle
+
+204 FORMAT(A14)
+
+    IF (WriteLogFile) THEN
+        WRITE(4, 204) '!   Point Data'
+    END IF
 
     CALL SurfaceTypePropertiesIn    !RS: Reading in the surface properties block
 
@@ -175,12 +199,12 @@ SUBROUTINE SurfaceNormal(Vx, Vy, Vz)
     REAL(Prec2) :: NV(SIndex), Vector(3) !Norm_V,
     REAL(Prec2), Dimension (:, :) :: Vx(SIndex, 2), Vy(SIndex, 2), Vz(SIndex, 2)
 
-    !  Norm_V        magnitude of a vector
-    !  NV(SIndex)     Magnitude of a normal vector of a surface SIndex
-    !  Vector(3)      Coefficients of a normal vector
+    ! Norm_V         Magnitude of a vector
+    ! NV(SIndex)     Magnitude of a normal vector of a surface SIndex
+    ! Vector(3)      Coefficients of a normal vector
 
-    !  Calculates the cross product of the vectors on a surface to determine the
-    !  surface Normal vector
+    ! Calculates the cross product of the vectors on a surface to determine the
+    ! Surface Normal vector
     NormalV(SIndex, 1) = Vy(SIndex, 1) * Vz(SIndex, 2) - Vz(SIndex, 1) * Vy(SIndex, 2)
     NormalV(SIndex, 2) = Vz(SIndex, 1) * Vx(SIndex, 2) - Vx(SIndex, 1) * Vz(SIndex, 2)
     NormalV(SIndex, 3) = Vx(SIndex, 1) * Vy(SIndex, 2) - Vy(SIndex, 1) * Vx(SIndex, 2)
@@ -189,18 +213,18 @@ SUBROUTINE SurfaceNormal(Vx, Vy, Vz)
         Vector(K) = NormalV(SIndex, K)
     END DO
 
-    !   JDS 11 - 8 - 06 attempt to eliminate Norm_V linking problem
-    !   NV(SIndex) = Norm_V(Vector)
+    ! JDS 11-8-06 attempt to eliminate Norm_V linking problem
+    ! NV(SIndex) = Norm_V(Vector)
     NV(Sindex) = sqrt(DOT_PRODUCT(Vector, Vector))
 
-    !   Converts/Normalizes the normal vector to get the unit vector
+    ! Converts/Normalizes the normal vector to get the unit vector
     DO J = 1, 3
         NormalUV(SIndex, J) = Vector(J) / NV(SIndex)
     END DO
 
 END SUBROUTINE SurfaceNormal
 
-SUBROUTINE Calculate_Area_Surfaces()
+SUBROUTINE CalculateAreaSurfaces()
 !******************************************************************************
 !
 !  PURPOSE:        Determine areas of the surfaces in the enclosure
@@ -263,7 +287,7 @@ SUBROUTINE Calculate_Area_Surfaces()
         S(SIndex) = (LT(SIndex, 1) + LT(SIndex, 2) + LT(SIndex, 3)) / 2
         Area(SIndex) = SQRT(S(SIndex) * (S(SIndex) - LT(SIndex, 1)) * (S(SIndex) - LT(SIndex, 2)) * (S(SIndex) - LT(SIndex, 3)))
     ENDIF
-END SUBROUTINE Calculate_Area_Surfaces
+END SUBROUTINE CalculateAreaSurfaces
 
 SUBROUTINE CrossProduct(Vec1, Vec2, Vec)
 !******************************************************************************

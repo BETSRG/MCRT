@@ -77,25 +77,25 @@ SUBROUTINE AbsorptionReflection
         ELSE
             IF(SIndex == SIndexR .and. REF_IND == 0)THEN    !RS: Reflected Rays
 
-            NCount = 1   !RS: Marking a reflection
+                NCount = 1   !RS: Marking a reflection
 
-            TCountSpecR = 1  !RS: Setting a flag
+                TCountSpecR = 1  !RS: Setting a flag
 
-            IF (WriteLogFile) THEN
-                WRITE(4, 112, ADVANCE = 'NO')'P', SIndex, XLS(SIndex), YLS(SIndex), ZLS(SIndex), SInter, XP(SIndex, SInter), YP(SIndex, SInter), ZP(SIndex, SInter)
-            ENDIF
+                IF (WriteLogFile) THEN
+                    WRITE(4, 112, ADVANCE = 'NO')'P', SIndex, XLS(SIndex), YLS(SIndex), ZLS(SIndex), SInter, XP(SIndex, SInter), YP(SIndex, SInter), ZP(SIndex, SInter)
+                ENDIF
 
-112         FORMAT(A1, 2(' ', I2, 3(' ', f6.3)))
+112             FORMAT(A1, 2(' ', I2, 3(' ', f6.3)))
 
             ELSEIF(REF_IND == 1)THEN    !RS: Rereflected rays
 
-            TCountSpecR = 2  !RS: Debugging: Setting a flag
+                TCountSpecR = 2  !RS: Debugging: Setting a flag
 
-            IF (WriteLogFile) THEN
-                WRITE(4, 102, ADVANCE = 'NO')SInter, XP(SIndex, SInter), YP(SIndex, SInter), ZP(SIndex, SInter)
-            ENDIF
+                IF (WriteLogFile) THEN
+                    WRITE(4, 102, ADVANCE = 'NO')SInter, XP(SIndex, SInter), YP(SIndex, SInter), ZP(SIndex, SInter)
+                ENDIF
 
-102         FORMAT(' ', 1(I2, 3(' ', f6.3)))
+102             FORMAT(' ', 1(I2, 3(' ', f6.3)))
 
             ENDIF
 
