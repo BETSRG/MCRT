@@ -117,7 +117,7 @@ END Subroutine  CalculateGeometry
 SUBROUTINE CalculateSurfaceEquation()
 !******************************************************************************
 !
-!  SUBROUTINE:    Calculate_Surface_Equation
+!  SUBROUTINE:    CalculateSurfaceEquation
 !
 !  PURPOSE:       Determines the coefficients of the surface equation using
 !                 surface normal vector a point on the surface. The equation

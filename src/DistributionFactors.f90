@@ -3,8 +3,8 @@ MODULE Distribution_Factors
 USE Global
 USE EnclosureGeometry
 USE EnergyBundleLocation
-USE IntersectionEnergy_Surface
-USE EnergyAbsorbed_Reflected
+USE IntersectionEnergySurface
+USE EnergyAbsorbedReflected
 
 IMPLICIT NONE
 CONTAINS

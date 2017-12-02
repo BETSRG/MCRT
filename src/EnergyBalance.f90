@@ -3,8 +3,8 @@
 USE Global
 USE EnclosureGeometry
 USE EnergyBundleLocation
-USE IntersectionEnergy_Surface
-USE EnergyAbsorbed_Reflected
+USE IntersectionEnergySurface
+USE EnergyAbsorbedReflected
 USE Distribution_Factors
 
 IMPLICIT NONE
@@ -19,8 +19,8 @@ SUBROUTINE RadiationBalance
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER  :: I, J, K, Index, IOS, LWL, UPL
-    INTEGER, ALLOCATABLE, DIMENSION(:) :: Eb
+    INTEGER  :: I, J, LWL, UPL, IOS
+    INTEGER, ALLOCATABLE, DIMENSION(:) :: EB
     REAL(Prec2) :: SIGMA, EBSUM, T
 
     SIGMA = 5.67E-8    ! Stephan Boltzmann constant

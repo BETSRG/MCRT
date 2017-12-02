@@ -1,7 +1,7 @@
-  MODULE IntersectionEnergy_Surface
+  MODULE IntersectionEnergySurface
 !****************************************************************************
 !
-!  MODULE:        IntersectionEnergy_Surface
+!  MODULE:        IntersectionEnergySurface
 !
 !  PURPOSE:       Determines the point of intersection of the emitted energy &
 !                 the surfaces in the enclosure
@@ -11,7 +11,7 @@
   USE Global
   USE EnclosureGeometry
   USE EnergyBundleLocation
-  USE EnergyAbsorbed_Reflected
+  USE EnergyAbsorbedReflected
 
   IMPLICIT NONE
   CONTAINS
@@ -28,23 +28,23 @@ SUBROUTINE CheckingIntersection
 !  PURPOSE:     Determines the point of intersection between the emitted
 !               energy ray and the surfaces
 !
-!  CALLS:       Subroutines Intersection_Points & SingleOutIntersection
+!  CALLS:       Subroutines IntersectionPoints & SingleOutIntersection
 !
 !****************************************************************************
 
     IMPLICIT NONE
     INTEGER :: I, J, K, Index, IOS, InterCount
 
-    CALL Intersection_Points()
+    CALL IntersectionPoints()
     CALL SingleOutIntersection()
 
 END SUBROUTINE CheckingIntersection
 
 
-SUBROUTINE Intersection_Points()
+SUBROUTINE IntersectionPoints()
 !****************************************************************************
 !
-!  SUBROUTINE:  Intersection_Points
+!  SUBROUTINE:  IntersectionPoints
 !
 !  PURPOSE:     Determines all possible points of intersection for the
 !               surfaces in the enclosure
@@ -117,7 +117,7 @@ SUBROUTINE Intersection_Points()
         END DO
     END DO
 
-END SUBROUTINE Intersection_Points
+END SUBROUTINE IntersectionPoints
 
 SUBROUTINE SingleOutIntersection()
 !******************************************************************************
@@ -228,7 +228,7 @@ SUBROUTINE IntersectionRectangle(Index)
     IMPLICIT NONE
     INTEGER :: I, J, K, Index, SCount, IOS, count
     INTEGER, DIMENSION (:) :: VS(4)
-    REAL(Prec2), DIMENSION(:, :):: VcpS(NSurf, 3), VcpN(NSurf, 4)
+    REAL(Prec2), DIMENSION(:, :) :: VcpS(NSurf, 3), VcpN(NSurf, 4)
     REAL(Prec2), DIMENSION(:) ::  V(3), X(4), Y(4), Z(4), V_edge(3), V_Int(3), Vcp(3), UNV(3), Vedge1(3), Vedge2(3), Vedge3(3), Vedge4(3)
     REAl(Prec2) SIMIN
 
@@ -290,7 +290,7 @@ SUBROUTINE IntersectionRectangle(Index)
        Yo(SInter) = YP(SIndex, Index)
        Zo(SInter) = ZP(SIndex, Index)
 
-    ! JDS: One possible problem - IF intersection is on vertex or edge, it will be "false"
+    ! JDS: One possible problem - If intersection is on vertex or edge, it will be "false"
 
     ELSE
         Intersects(Index) = .false.
@@ -378,4 +378,4 @@ SUBROUTINE IntersectionTriangle(Index)
     ENDIF
 END SUBROUTINE IntersectionTriangle
 
-END MODULE IntersectionEnergy_Surface
+END MODULE IntersectionEnergySurface

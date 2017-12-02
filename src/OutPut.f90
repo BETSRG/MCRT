@@ -1,16 +1,16 @@
 
 MODULE OutPut
 
-    USE Global
-    USE EnclosureGeometry
-    USE EnergyBundleLocation
-    USE IntersectionEnergy_Surface
-    USE EnergyAbsorbed_Reflected
-    USE Distribution_Factors
-    USE EnergyBalance
+USE Global
+USE EnclosureGeometry
+USE EnergyBundleLocation
+USE IntersectionEnergySurface
+USE EnergyAbsorbedReflected
+USE Distribution_Factors
+USE EnergyBalance
 
-    IMPLICIT NONE
-    CONTAINS
+IMPLICIT NONE
+CONTAINS
 
 SUBROUTINE Progress(Surf, TotNumSurfs)
     ! Writes status bar

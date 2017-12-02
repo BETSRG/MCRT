@@ -1,5 +1,5 @@
 
-MODULE EnergyAbsorbed_Reflected
+MODULE EnergyAbsorbedReflected
 
 
 USE Global
@@ -161,4 +161,4 @@ SUBROUTINE AbsorptionReflection
     ENDIF
 
 END SUBROUTINE AbsorptionReflection
-END MODULE EnergyAbsorbed_Reflected
+END MODULE EnergyAbsorbedReflected
