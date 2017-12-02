@@ -9,7 +9,7 @@ USE EnergyAbsorbed_Reflected
 IMPLICIT NONE
 CONTAINS
 
-SUBROUTINE Rad_Distribution_Factors
+SUBROUTINE RadDistributionFactors
 !******************************************************************************
 !
 ! PURPOSE:            Calculating the radiation distribution factor
@@ -200,6 +200,6 @@ SUBROUTINE Rad_Distribution_Factors
     END DO
 
     RETURN
-END SUBROUTINE Rad_Distribution_Factors
+END SUBROUTINE RadDistributionFactors
 
 END MODULE Distribution_Factors

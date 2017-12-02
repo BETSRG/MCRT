@@ -11,6 +11,7 @@ MODULE EnclosureGeometry
 !******************************************************************************
 
 USE Global
+USE StringUtility
 IMPLICIT NONE
 
 CONTAINS
@@ -19,29 +20,24 @@ SUBROUTINE CalculateGEometry()
 
     IMPLICIT NONE
     INTEGER :: I, J, L, Openstatus, IOS
-    CHARACTER (Len = 12)  ErrorMessage
     CHARACTER (Len = 12) :: SubTitle
-    CHARACTER (Len = 3)  :: SurfVertCommentIndicator
-    LOGICAL ReadFile
+    CHARACTER (Len = 10) :: SurfVertCommentIndicator
     CHARACTER (LEN = 12) :: SubTitle2   !RS: Second subtitle
 
     !   The filename for the vertex and surface parameters of the rectangular
     !   surface Enclosure
     !   Reads numer of vertices and number of surfaces to allocate the array's size
 
-    I = 0
-    J = 0
+    NVertex = 0
+    NSurf = 0
 
     DO
         READ (2, *) SurfVertCommentIndicator
-        IF (TRIM(SurfVertCommentIndicator) == "v" .or. TRIM(SurfVertCommentIndicator) == "V") THEN
-            I = I + 1
-        ELSE IF (TRIM(SurfVertCommentIndicator) == "!" ) THEN
-            NVertex = I
-        ELSE IF (TRIM(SurfVertCommentIndicator) == "s" .or. TRIM(SurfVertCommentIndicator) == "S") THEN
-            J = J + 1
-        ELSE
-            NSurf = J
+        IF (StrLowCase(TRIM(SurfVertCommentIndicator)) == "v") THEN
+            NVertex = NVertex + 1
+        ELSE IF (StrLowCase(TRIM(SurfVertCommentIndicator)) == "s") THEN
+            NSurf = NSurf + 1
+        ELSE IF (StrLowCase(TRIM(SurfVertCommentIndicator)) == "end" ) THEN
             EXIT
         ENDIF
     END DO
@@ -91,21 +87,27 @@ SUBROUTINE CalculateGEometry()
         DiffReflec(I) = 1 - EMIT(I)
     END DO
 
-    READ (2, *) SubTitle2    !RS: Deals with a second subtitle
-
 204 FORMAT(A14)
 
     IF (WriteLogFile) THEN
         WRITE(4, 204) '!   Point Data'
     END IF
 
-    CALL SurfaceTypePropertiesIn    !RS: Reading in the surface properties block
+    ! Check if any surface type definitions. If none, set all surfs to DIF, else read them.
+    READ (2, *) SubTitle2
+    IF (StrLowCase(TRIM(SubTitle2)) == 'end') THEN
+        DO I = 1, NSurf
+            SurfaceType(I) = "DIF"
+        END DO
+    ELSE
+        CALL SurfaceTypePropertiesIn
+    END IF
 
     CLOSE(Unit = 2)
 
 END Subroutine  CalculateGEometry
 
-SUBROUTINE Calculate_SurfaceEquation()
+SUBROUTINE CalculateSurfaceEquation()
 !******************************************************************************
 !
 !  SUBROUTINE:    Calculate_Surface_Equation
@@ -185,7 +187,7 @@ SUBROUTINE Calculate_SurfaceEquation()
     C(SIndex) = NormalUV(SIndex, 3)
     D(SIndex) = - (X(1) * A(SIndex) + Y(1) * B(SIndex) + Z(1) * C(SIndex))
 
-END SUBROUTINE Calculate_SurfaceEquation
+END SUBROUTINE CalculateSurfaceEquation
 
 SUBROUTINE SurfaceNormal(Vx, Vy, Vz)
 !******************************************************************************
@@ -396,23 +398,23 @@ SUBROUTINE SurfaceTypePropertiesIn()
     I = 1  !RS: Resetting I
 
     DO I = 1, NSurf
-        !JDS 20151109: the two statements in Cases SDR and sRO that set the SpecReflec to 1 - SpecReflec make little sense.
+        !JDS 20151109: the two statements in Cases SDR and SRO that set the SpecReflec to 1 - SpecReflec make little sense.
         !So I have commented them out.
         SELECTCASE(SurfaceType(I))  !RS: Dealing with the different surface cases
             CASE("SDE")
-                READ(2, *)SNumber(I), SurfaceType(I), DirectionX(I), DirectionY(I), DirectionZ(I) !RS: Reading in the direction vector
+                READ(2, *) SNumber(I), SurfaceType(I), DirectionX(I), DirectionY(I), DirectionZ(I) !RS: Reading in the direction vector
             CASE("SDR")
-                READ(2, *)SNumber(I), SurfaceType(I), SpecReflec(I), DiffReflec(I)    !RS: Reading in specular and diffuse reflection
+                READ(2, *) SNumber(I), SurfaceType(I), SpecReflec(I), DiffReflec(I)    !RS: Reading in specular and diffuse reflection
                 !SpecReflec(I) = 1 - SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
             CASE("DRO")
-                READ(2, *)SNumber(I), SurfaceType(I) !RS: Nothing more to read in here.
+                READ(2, *) SNumber(I), SurfaceType(I) !RS: Nothing more to read in here.
             CASE("SRO")
                 READ(2, *) SNumber(I), SurfaceType(I), SpecReflec(I), DiffReflec(I)    !RS: Reading in specular and diffuse reflection
                 !SpecReflec(I) = 1 - SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
             CASE DEFAULT
-                READ(2, *)SNumber(I), SurfaceType(I) !RS: Nothing more to read in here either
+                READ(2, *) SNumber(I), SurfaceType(I) !RS: Nothing more to read in here either
         END SELECT
     END DO
-END SUBROUTINE
+END SUBROUTINE SurfaceTypePropertiesIn
 
 END MODULE EnclosureGeometry

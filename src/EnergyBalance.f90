@@ -10,7 +10,7 @@ USE Distribution_Factors
 IMPLICIT NONE
 CONTAINS
 
-SUBROUTINE Radiation_Balance
+SUBROUTINE RadiationBalance
 !******************************************************************************
 !
 ! PURPOSE:          Calculating the net radiation flux at each surface using
@@ -58,6 +58,6 @@ SUBROUTINE Radiation_Balance
         Q(I) = Area(I) * QFlux(I)
     END DO
 
-END SUBROUTINE Radiation_Balance
+END SUBROUTINE RadiationBalance
 
 END MODULE EnergyBalance

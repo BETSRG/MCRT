@@ -29,7 +29,7 @@ SUBROUTINE Progress(Surf, TotNumSurfs)
     RETURN
 END SUBROUTINE progress
 
-SUBROUTINE Print_ViewFactor_HeatFlux()
+SUBROUTINE PrintViewFactorHeatFlux()
     !******************************************************************************
     !
     ! PURPOSE:          Prints View Factors, Radiation Heat Flux and Heat Transfer
@@ -86,5 +86,5 @@ SUBROUTINE Print_ViewFactor_HeatFlux()
 
 107  FORMAT(//, 8x, A14, 1x, F14.2, x, A1)
 
-    END SUBROUTINE Print_ViewFactor_HeatFlux
+    END SUBROUTINE PrintViewFactorHeatFlux
  END MODULE OutPut

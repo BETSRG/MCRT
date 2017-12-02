@@ -62,7 +62,7 @@ PROGRAM Main_MonteCarlo
 
     WRITE(*, *) "Calculating Surface Areas"
     DO SIndex = 1, NSurf
-        CALL Calculate_SurfaceEquation()
+        CALL CalculateSurfaceEquation()
         CALL CalculateAreaSurfaces()
         CALL TangentVectors()
     END DO
@@ -155,11 +155,11 @@ PROGRAM Main_MonteCarlo
 
     !  Calculate the radiation distribution factor
     WRITE(*, *) "Calculating Distribution Factors"
-    CALL Rad_Distribution_Factors()
+    CALL RadDistributionFactors()
 
     !  Calculate the heat balance of the enclosure
     WRITE(*, *) "Evaluating Radiation Balance"
-    CALL Radiation_Balance
+    CALL RadiationBalance()
 
     WRITE(*, *) "Simulaton Complete"
 
@@ -167,7 +167,7 @@ PROGRAM Main_MonteCarlo
     CALL CPU_TIME(TIME2)
 
     !  WRITE Results to a file
-    CALL Print_ViewFactor_HeatFlux
+    CALL PrintViewFactorHeatFlux
 
     CLOSE(UNIT = 2)
     CLOSE(Unit = 3)
