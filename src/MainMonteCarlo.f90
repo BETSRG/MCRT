@@ -1,4 +1,4 @@
-PROGRAM Main_MonteCarlo
+PROGRAM MainMonteCarlo
     !Program and Modules created by Bereket Nigusse, Fall 2004 for MAE 5823
     !Program and Modules updated and modified November 2012 by
     !John Holman, Rachel Spitler, and Sudha Sikha for MAE 5823
@@ -165,4 +165,4 @@ PROGRAM Main_MonteCarlo
     CLOSE(Unit = 10)
     CLOSE(Unit = 11)
     STOP
-END PROGRAM Main_MonteCarlo
+END PROGRAM MainMonteCarlo

@@ -337,9 +337,7 @@ SUBROUTINE AllocateArrays()
 !******************************************************************************
 
     IMPLICIT NONE
-    INTEGER :: IOS
-    INTEGER :: I !Loop counter
-    INTEGER :: J !Loop counter
+    INTEGER :: I, J, IOS
 
     ALLOCATE(NAEnergy(NSurf, NSurf))
     ALLOCATE(TCOUNTA(NSurf), TCOUNTR(NSurf), TCOUNTRR(NSurf), NTOTAL(NSurf), STAT = IOS)
@@ -349,14 +347,14 @@ SUBROUTINE AllocateArrays()
     ALLOCATE(TSpecA(NSurf), TSpecR(NSurf), TSpecRR(NSurf), NAEnergyS(NSurf, NSurf), NAEnergyR(NSurf, NSurf), NAEnergyWR(NSurf, NSurf))
 
    !Setting Specular Counter arrays to 0
-    DO i = 1, NSurf  !JH
-        TSpecA(i) = 0
-        TSpecR(i) = 0
-        TSpecRR(i) = 0
-        DO j = 1, NSurf
-            NAEnergyS(i, j) = 0
-            NAEnergyR(i, j) = 0
-            NAEnergyWR(i, j) = 0
+    DO I = 1, NSurf  !JH
+        TSpecA(I) = 0
+        TSpecR(I) = 0
+        TSpecRR(I) = 0
+        DO J = 1, NSurf
+            NAEnergyS(I, J) = 0
+            NAEnergyR(I, J) = 0
+            NAEnergyWR(I, J) = 0
         END DO
     END DO
 END SUBROUTINE AllocateArrays

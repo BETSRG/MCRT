@@ -10,7 +10,7 @@ IMPLICIT NONE
 
 CONTAINS
 
-SUBROUTINE AbsorptionReflection
+SUBROUTINE AbsorptionReflection()
 
 !******************************************************************************
 !
@@ -39,7 +39,7 @@ SUBROUTINE AbsorptionReflection
             TSpecA(SIndexR) = TSpecA(SIndexR) + 1    !RS: Total Number of energy bundles absorbed by surface
 
             !   count the number of energy bundles absorbed and emitted
-            IF (NCount .NE. 1) THEN !RS: Non - reflected rays
+            IF (NCount .NE. 1) THEN !RS: Non-reflected rays
                 NAEnergyWR(SIndexR, SInter) = NAEnergyWR(SindexR, Sinter) + 1  !RS: Total Number of energy bundles absorbed without reflection
 
                 IF (WriteLogFile) THEN

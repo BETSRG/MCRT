@@ -19,7 +19,7 @@
 ! Checking intersection point of emitted ray and surfaces in the enclosure
 ! the emitted ray navigates through the equation of surfaces
 
-SUBROUTINE CheckingIntersection
+SUBROUTINE CheckingIntersection()
 
 !****************************************************************************
 !

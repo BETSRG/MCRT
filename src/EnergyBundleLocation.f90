@@ -25,7 +25,6 @@ SUBROUTINE EnergySourceLocation()
 !               THEN the polygon is triangular, else it is rectangular
 !
 !********************************************************************************
-    INTEGER :: I, J, K, IOS
     CALL RANDOM_NUMBER(Rand)
     IF(PolygonIndex(SIndex) .eq. 4)THEN
         CALL RectangularSurface()
@@ -90,7 +89,7 @@ SUBROUTINE TriangularSurface()
     ENDIF
 END SUBROUTINE TriangularSurface
 
-SUBROUTINE RectangularSurface
+SUBROUTINE RectangularSurface()
 !*******************************************************************************
 !
 !   Purpose:    Calculates the location of the emitted energy on a rectangular
@@ -106,7 +105,7 @@ SUBROUTINE RectangularSurface
 !   X, Y, Z       The coordinates of a vertex
 
     IMPLICIT NONE
-    INTEGER :: I, J, K, IOS
+    INTEGER :: J
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(prec2), ALLOCATABLE, DIMENSION(:) :: SurfaceE
     REAL(Prec2), DIMENSION(4) :: X, Y, Z
@@ -263,7 +262,7 @@ SUBROUTINE DirectionEmittedEnergy()
 !   Rand(5)      Random number for azimuth angle phi
 !
     IMPLICIT NONE
-    INTEGER        :: IOS, J
+    INTEGER        :: IOS
     REAL(Prec2)    :: Theta, Phi, Pi, DotTheta, MagVec !Theta1, Theta2,
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(Prec2), DIMENSION(:, :) :: InVecDirec(3), SurfNorm(3)   !RS: Incoming Vector Direction and Surface Normal
@@ -307,7 +306,7 @@ SUBROUTINE DirectionEmittedEnergy()
             EmittedUV(Sindex, 3) = DirectionZ(SIndex)
         ENDIF
 
-        CALL CheckDirection
+        CALL CheckDirection()
 
     ELSE
         EmittedUV(SIndex, 1) = NormalUV(SIndex, 1) * cos(Theta) + Tan_V1(SIndex, 1) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 1) * sin(Theta) * sin(Phi)
@@ -316,7 +315,7 @@ SUBROUTINE DirectionEmittedEnergy()
     ENDIF
 END SUBROUTINE  DirectionEmittedEnergy
 
-SUBROUTINE CheckDirection
+SUBROUTINE CheckDirection()
 
     !RS:Debugging: Trying to set direction = 0 if it doesn't exist
 
