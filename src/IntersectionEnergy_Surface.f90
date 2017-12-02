@@ -159,7 +159,7 @@ SUBROUTINE SingleOutIntersection()
             ENDIF
         ELSE
             Intersection(SIndex, Index) = 0
-            INTersects(SIndex) = .FALSE.    !RS: Setting the intersection flag to false for cases when it's the emission surface
+            Intersects(SIndex) = .FALSE.    !RS: Setting the intersection flag to false for cases when it's the emission surface
         ENDIF
     END DO
 
@@ -183,7 +183,7 @@ SUBROUTINE SingleOutIntersection()
 
     !  Determine intersection by selecting the closest point
     DO I = 1, Nsurf
-        IF (INTersects(I))THEN
+        IF (Intersects(I))THEN
             IF(SIINTER(I) == SIMIN) THEN
                 SInter = I
             ENDIF
@@ -282,7 +282,7 @@ SUBROUTINE IntersectionRectangle(Index)
     !  Eliminate intersection point outside the surface domain
     IF(VcpN(Index, 1)> 0.0 .and. VcpN(Index, 4) > 0.0 .and. VcpN(Index, 2) > 0.0 .and. VcpN(Index, 3) > 0.0) THEN
         SInter = Index
-        INTersects(Index) = .True.
+        Intersects(Index) = .True.
 
     !  Save the intersection point coordinates
 
@@ -293,7 +293,7 @@ SUBROUTINE IntersectionRectangle(Index)
     ! JDS: One possible problem - IF intersection is on vertex or edge, it will be "false"
 
     ELSE
-        INTersects(Index) = .false.
+        Intersects(Index) = .false.
         Intersection(SIndex, Index) = 0
     ENDIF
 END SUBROUTINE IntersectionRectangle
@@ -365,7 +365,7 @@ SUBROUTINE IntersectionTriangle(Index)
     !  Eliminate intersection point outside the surface domain
     IF(VcpN(Index, 1) > 0.0 .and. VcpN(Index, 2) > 0.0 .and. VcpN(Index, 3) > 0.0 .and. Intersection(SIndex, Index) == 1) THEN
         SInter = Index
-        INTersects(Index) = .True.
+        Intersects(Index) = .True.
         Intersection(SIndex, Index) = 1
 
         !  Save the intersection point coordinates
@@ -373,7 +373,7 @@ SUBROUTINE IntersectionTriangle(Index)
         Yo(SInter) = YP(SIndex, Index)
         Zo(SInter) = ZP(SIndex, Index)
     ELSE
-        INTersects(Index) = .false.
+        Intersects(Index) = .false.
         Intersection(SIndex, Index) = 0
     ENDIF
 END SUBROUTINE IntersectionTriangle

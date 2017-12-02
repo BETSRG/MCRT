@@ -78,7 +78,7 @@ PROGRAM Main_MonteCarlo
 
         !  The counter only counts the emitted and absorbed energy
         Ntrials = 0
-        IF (SurfaceType(SIndex) .EQ. 'SDE') THEN
+        IF (SType(SIndex) .EQ. 'SDE') THEN
 
             SpIndex = 1 !JH: This begins the Specular ray tracing
 
@@ -123,7 +123,7 @@ PROGRAM Main_MonteCarlo
             IF(NTrialsd == NBundles) EXIT Diffuse1
             END DO Diffuse1
 
-        ELSEIF (SurfaceType(SIndex) .EQ. "DIF" .OR. SurfaceType(SIndex) .EQ. "SDR") THEN
+        ELSEIF (SType(SIndex) .EQ. "DIF" .OR. SType(SIndex) .EQ. "SDR") THEN
             NTrialsd = 0
 
             !  JH: This is the standard diffuse ray tracing

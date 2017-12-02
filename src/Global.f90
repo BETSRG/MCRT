@@ -61,14 +61,9 @@ SAVE
     REAL(Prec2)                             :: TIME2        ! Finishing Time in s
 
     CHARACTER (LEN = 12), ALLOCATABLE, DIMENSION(:) :: SURF_NAME   ! Name of Surfaces
-    CHARACTER (LEN = 12), ALLOCATABLE, DIMENSION(:) :: VERTEX      ! Name of Vertex
-    CHARACTER (LEN = 12), ALLOCATABLE, DIMENSION(:) :: SURFACE     ! Index of Surfaces ("s")
-    LOGICAL :: Reflected                                        ! True reflected or false
-                                                                ! absorbed
-    LOGICAL, ALLOCATABLE, DIMENSION(:) :: INTersects ! Surface INtersection Flag
-    LOGICAL :: WriteLogFile                          ! Flag to indicate whether log file
-                                                     ! should be written.
-                                                     ! JDS 11-10-2006
+    LOGICAL :: Reflected                             ! True reflected or false absorbed
+    LOGICAL, ALLOCATABLE, DIMENSION(:) :: Intersects ! Surface Intersection Flag
+    LOGICAL :: WriteLogFile                          ! Flag to indicate whether log file should be written
 
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: XP     ! Intersection Point x - coordinates
     REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: YP     ! Intersection Point y - coordinates
@@ -118,7 +113,7 @@ SAVE
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   C            ! Coefficient of Z in Surface equation
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   D            ! Constant in Surface equation
 
-    CHARACTER(LEN = 3), ALLOCATABLE, DIMENSION(:) ::  SurfaceType  ! Surface Type Array
+    CHARACTER(LEN = 3), ALLOCATABLE, DIMENSION(:) ::  SType  ! Surface Type Array
     REAL (prec2), ALLOCATABLE, DIMENSION(:) ::  DirectionX   ! X Vector Coordinates for SDE type
     REAL (prec2), ALLOCATABLE, DIMENSION(:) ::  DirectionY   ! Y Vector Coordinates for SDE type
     REAL (prec2), ALLOCATABLE, DIMENSION(:) ::  DirectionZ   ! Z Vector Coordinates for SDE type

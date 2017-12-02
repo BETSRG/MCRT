@@ -16,15 +16,16 @@ IMPLICIT NONE
 
 CONTAINS
 
-SUBROUTINE CalculateGEometry()
+SUBROUTINE CalculateGeometry()
 
     IMPLICIT NONE
-    INTEGER :: I, J, IOS
+    INTEGER :: I, VertIndex, SurfIndex, TypeIndex, IOS
     CHARACTER (Len = 12) :: ReadStr
 
     NVertex = 0
     NSurf = 0
 
+    ! Count verticies and surfaces so we can allocate arrays
     DO
         ReadStr = ''
         READ (2, *, IOSTAT = IOS) ReadStr
@@ -42,67 +43,76 @@ SUBROUTINE CalculateGEometry()
     REWIND(2)
 
     !  Allocate the size of the array
-    ALLOCATE(Vertex(NVertex), V(NVertex), XS(NVertex), YS(NVertex), ZS(NVertex), STAT = IOS)
-    ALLOCATE(SURFACE(NSurf), SNumber(NSurf), SVertex(NSurf, NSurf), BASEP(NSurf), CMB(NSurf), EMIT(NSurf), SURF_NAME(NSurf), STAT = IOS)
-    ALLOCATE(SurfaceType(NSurf), DirectionX(NSurf), DirectionY(NSurf), DirectionZ(NSurf), SpecReflec(NSurf), DiffReflec(NSurf))
-
-    !JH: Loop to set specular reflectances to 0 initially
-    !JDS 20151109: Changed this to default value of zero; one is a poor choice.
-
-    DO I = 1, NSurf
-        SpecReflec(I) = 0
-    END DO
+    ALLOCATE(V(NVertex), XS(NVertex), YS(NVertex), ZS(NVertex), STAT = IOS)
+    ALLOCATE(SNumber(NSurf), SVertex(NSurf, NSurf), SType(NSurf), BASEP(NSurf), CMB(NSurf), EMIT(NSurf), SURF_NAME(NSurf), STAT = IOS)
+    ALLOCATE(DirectionX(NSurf), DirectionY(NSurf), DirectionZ(NSurf), SpecReflec(NSurf), DiffReflec(NSurf))
 
 201 FORMAT(A1, ' ', I2, 3(' ', f6.3))
-
-    DO I = 1, NVertex
-        READ (2, *) Vertex(I), V(I), XS(I), YS(I), ZS(I)
-        IF (WriteLogFile) THEN
-            WRITE(4, 201, ADVANCE = 'YES') Vertex(I), V(I), XS(I), YS(I), ZS(I)
-        END IF
-    END DO
-
-    READ (2, *) ReadStr
-
-202 FORMAT(A44)
-
-    IF (WriteLogFile) THEN
-        WRITE(4, 202) '!   #  v1  v2  v3  v4  base  cmb  emit  name'
-    END IF
-
 203 FORMAT(A1, 5('  ', I2), 1('  ',f6.3), 1('  ',I2), 1('  ',f6.3), A15)
 
-	DO I = 1, NSurf
-		READ (2, *)SURFACE(I), SNumber(I), (SVertex(I, J), J = 1, 4), BASEP(I), CMB(I), EMIT(I), SURF_NAME(I)
+    ! Now, read all data into arrays
+    DO
+        ReadStr = ''
+        READ (2, *, IOSTAT = IOS) ReadStr
+        IF (StrLowCase(TRIM(ReadStr)) == "v") THEN
 
-        IF (WriteLogFile) THEN
-            WRITE(4, 203) SURFACE(I), SNumber(I), (SVertex(I, J), J = 1, 4), BASEP(I), CMB(I), EMIT(I), SURF_NAME(I)
+            ! Read in vertex information
+            BACKSPACE(2)
+            READ (2, *) ReadStr, VertIndex, XS(VertIndex), YS(VertIndex), ZS(VertIndex)
+            V(VertIndex) = VertIndex
+            IF (WriteLogFile) THEN
+                WRITE(4, 201, ADVANCE = 'YES') TRIM(ReadStr), VertIndex, XS(VertIndex), YS(VertIndex), ZS(VertIndex)
+            END IF
+
+        ELSE IF (StrLowCase(TRIM(ReadStr)) == "s") THEN
+
+            ! Read in surface information
+            BACKSPACE(2)
+            READ (2, *) ReadStr, SurfIndex, (SVertex(SurfIndex, I), I = 1, 4), BASEP(SurfIndex), CMB(SurfIndex), EMIT(SurfIndex), SURF_NAME(SurfIndex)
+            SNumber(SurfIndex) = SurfIndex
+            IF (WriteLogFile) THEN
+                WRITE(4, 203) TRIM(ReadStr), SurfIndex, (SVertex(SurfIndex, I), I = 1, 4), BASEP(SurfIndex), CMB(SurfIndex), EMIT(SurfIndex), SURF_NAME(SurfIndex)
+            END IF
+
+            SpecReflec(SurfIndex) = 1 - EMIT(SurfIndex)
+            DiffReflec(SurfIndex) = 1 - EMIT(SurfIndex)
+
+        ELSE IF (StrLowCase(TRIM(ReadStr)) == "t") THEN
+
+            ! Read in surface type information
+            BACKSPACE(2)
+            READ(2, *) ReadStr, TypeIndex, SType(TypeIndex)
+            BACKSPACE(2)
+            IF (SType(TypeIndex) == "SDE") THEN
+                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), DirectionX(TypeIndex), DirectionY(TypeIndex), DirectionZ(TypeIndex) ! Reading in the direction vector
+            ELSE IF (SType(TypeIndex) == "SDR") THEN
+                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), SpecReflec(TypeIndex), DiffReflec(TypeIndex) ! Reading in specular and diffuse reflection
+            ELSE IF (SType(TypeIndex) == "DRO") THEN
+                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex)
+            ELSE IF (SType(TypeIndex) == "SRO") THEN
+                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), SpecReflec(TypeIndex), DiffReflec(TypeIndex) ! Reading in specular and diffuse reflection
+            ELSE
+                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex)
+            END IF
         END IF
 
-        !JDS 20151109: These are proper default values; these were not being set earlier.
-        SpecReflec(I) = 1 - EMIT(I)
-        DiffReflec(I) = 1 - EMIT(I)
+        IF (IS_IOSTAT_END(IOS)) THEN
+            EXIT
+        ENDIF
     END DO
 
-204 FORMAT(A14)
-
-    IF (WriteLogFile) THEN
-        WRITE(4, 204) '!   Point Data'
-    END IF
-
-    ! Check if any surface type definitions. If none, set all surfs to DIF, else read them.
-    READ (2, *, IOSTAT = IOS) ReadStr
-    IF (IS_IOSTAT_END(IOS)) THEN
-        DO I = 1, NSurf
-            SurfaceType(I) = "DIF"
-        END DO
-    ELSE
-        CALL SurfaceTypePropertiesIn
-    END IF
+    ! If no surface types were provided, set them to DIF here
+    DO I = 1, NSurf
+        IF ((SType(I) == "SDE") .or. (SType(I) == "SDR") .or. (SType(I) == "DRO") .or. (SType(I) == "SRO")) THEN
+            CYCLE
+        ELSE
+            SType(I) = "DIF"
+        END IF
+    END DO
 
     CLOSE(Unit = 2)
 
-END Subroutine  CalculateGEometry
+END Subroutine  CalculateGeometry
 
 SUBROUTINE CalculateSurfaceEquation()
 !******************************************************************************
@@ -335,7 +345,7 @@ SUBROUTINE AllocateArrays()
     ALLOCATE(TCOUNTA(NSurf), TCOUNTR(NSurf), TCOUNTRR(NSurf), NTOTAL(NSurf), STAT = IOS)
     ALLOCATE(XLS(NSurf), YLS(NSurf), ZLS(NSurf), STAT = IOS)
     ALLOCATE(XP(NSurf, NSurf), YP(NSurf, NSurf), ZP(NSurf, NSurf), Intersection(NSurf, NSurf), STAT = IOS)
-    ALLOCATE(Xo(NSurf), Yo(NSurf), Zo(NSurf), INTersects(NSurf), STAT = IOS)
+    ALLOCATE(Xo(NSurf), Yo(NSurf), Zo(NSurf), Intersects(NSurf), STAT = IOS)
     ALLOCATE(TSpecA(NSurf), TSpecR(NSurf), TSpecRR(NSurf), NAEnergyS(NSurf, NSurf), NAEnergyR(NSurf, NSurf), NAEnergyWR(NSurf, NSurf))
 
    !Setting Specular Counter arrays to 0
@@ -360,58 +370,15 @@ SUBROUTINE InitializeArrays()
 !******************************************************************************
 
     IMPLICIT NONE
-    INTEGER :: I, J, K, IOS
+    INTEGER :: I, J
 
     !  Initialize absorbed and reflected energy bundle counter arrays
-    DO J = 1, NSurf
-        DO K = 1, NSurf
-            NAEnergy(J, K) = 0
+    DO I = 1, NSurf
+        DO J = 1, NSurf
+            NAEnergy(I, J) = 0
         END DO
-        TCOUNTA(J) = 0; TCOUNTR(J) = 0; TCOUNTRR(J) = 0
+        TCOUNTA(I) = 0; TCOUNTR(I) = 0; TCOUNTRR(I) = 0
     END DO
 END SUBROUTINE InitializeArrays
-
-SUBROUTINE SurfaceTypePropertiesIn()
-!******************************************************************************
-!
-!  PURPOSE:        Reads in the surface type and properties
-!
-!******************************************************************************
-
-    INTEGER :: I !RS: Loop Counter
-
-    DO I = 1, NSurf
-        READ(2, *)SNumber(I), SurfaceType(I)  !RS: Reading in the surface numbers and types
-    END DO
-
-    I = 1  !RS: Resetting I
-
-    REWIND(2)    !RS: Going back to the beginning of the input file
-
-    DO I = 1, (NSurf + NVertex + 2) !Surfaces, Vertices, and two subtitles
-        READ(2, *)    !RS: Reading through the file until we get to the surface properties block
-    END DO
-
-    I = 1  !RS: Resetting I
-
-    DO I = 1, NSurf
-        !JDS 20151109: the two statements in Cases SDR and SRO that set the SpecReflec to 1 - SpecReflec make little sense.
-        !So I have commented them out.
-        SELECTCASE(SurfaceType(I))  !RS: Dealing with the different surface cases
-            CASE("SDE")
-                READ(2, *) SNumber(I), SurfaceType(I), DirectionX(I), DirectionY(I), DirectionZ(I) !RS: Reading in the direction vector
-            CASE("SDR")
-                READ(2, *) SNumber(I), SurfaceType(I), SpecReflec(I), DiffReflec(I)    !RS: Reading in specular and diffuse reflection
-                !SpecReflec(I) = 1 - SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
-            CASE("DRO")
-                READ(2, *) SNumber(I), SurfaceType(I) !RS: Nothing more to read in here.
-            CASE("SRO")
-                READ(2, *) SNumber(I), SurfaceType(I), SpecReflec(I), DiffReflec(I)    !RS: Reading in specular and diffuse reflection
-                !SpecReflec(I) = 1 - SpecReflec(I)   !RS: Changing it to absorptance for the absorption or reflection calculations
-            CASE DEFAULT
-                READ(2, *) SNumber(I), SurfaceType(I) !RS: Nothing more to read in here either
-        END SELECT
-    END DO
-END SUBROUTINE SurfaceTypePropertiesIn
 
 END MODULE EnclosureGeometry
