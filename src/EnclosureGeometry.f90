@@ -19,25 +19,22 @@ CONTAINS
 SUBROUTINE CalculateGEometry()
 
     IMPLICIT NONE
-    INTEGER :: I, J, L, Openstatus, IOS
-    CHARACTER (Len = 12) :: SubTitle
-    CHARACTER (Len = 10) :: SurfVertCommentIndicator
-    CHARACTER (LEN = 12) :: SubTitle2   !RS: Second subtitle
-
-    !   The filename for the vertex and surface parameters of the rectangular
-    !   surface Enclosure
-    !   Reads numer of vertices and number of surfaces to allocate the array's size
+    INTEGER :: I, J, IOS
+    CHARACTER (Len = 12) :: ReadStr
 
     NVertex = 0
     NSurf = 0
 
     DO
-        READ (2, *) SurfVertCommentIndicator
-        IF (StrLowCase(TRIM(SurfVertCommentIndicator)) == "v") THEN
+        ReadStr = ''
+        READ (2, *, IOSTAT = IOS) ReadStr
+        IF (StrLowCase(TRIM(ReadStr)) == "v") THEN
             NVertex = NVertex + 1
-        ELSE IF (StrLowCase(TRIM(SurfVertCommentIndicator)) == "s") THEN
+        ELSE IF (StrLowCase(TRIM(ReadStr)) == "s") THEN
             NSurf = NSurf + 1
-        ELSE IF (StrLowCase(TRIM(SurfVertCommentIndicator)) == "end" ) THEN
+        END IF
+
+        IF (IS_IOSTAT_END(IOS)) THEN
             EXIT
         ENDIF
     END DO
@@ -52,20 +49,20 @@ SUBROUTINE CalculateGEometry()
     !JH: Loop to set specular reflectances to 0 initially
     !JDS 20151109: Changed this to default value of zero; one is a poor choice.
 
-    DO J = 1, NSurf
-        SpecReflec(J) = 0
+    DO I = 1, NSurf
+        SpecReflec(I) = 0
     END DO
 
 201 FORMAT(A1, ' ', I2, 3(' ', f6.3))
 
-    DO J = 1, NVertex
-        READ (2, *)Vertex(J), V(J), XS(J), YS(J), ZS(J)
+    DO I = 1, NVertex
+        READ (2, *) Vertex(I), V(I), XS(I), YS(I), ZS(I)
         IF (WriteLogFile) THEN
-            WRITE(4, 201, ADVANCE = 'YES') Vertex(J), V(J), XS(J), YS(J), ZS(J)
+            WRITE(4, 201, ADVANCE = 'YES') Vertex(I), V(I), XS(I), YS(I), ZS(I)
         END IF
     END DO
 
-    READ (2, *) SubTitle
+    READ (2, *) ReadStr
 
 202 FORMAT(A44)
 
@@ -94,8 +91,8 @@ SUBROUTINE CalculateGEometry()
     END IF
 
     ! Check if any surface type definitions. If none, set all surfs to DIF, else read them.
-    READ (2, *) SubTitle2
-    IF (StrLowCase(TRIM(SubTitle2)) == 'end') THEN
+    READ (2, *, IOSTAT = IOS) ReadStr
+    IF (IS_IOSTAT_END(IOS)) THEN
         DO I = 1, NSurf
             SurfaceType(I) = "DIF"
         END DO
