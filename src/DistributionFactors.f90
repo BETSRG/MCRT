@@ -54,7 +54,7 @@ SUBROUTINE RadDistributionFactors
             IF ((TSpecA(I) - TSpecR(I)) .EQ. 0) THEN
                 RAD_D_WR(I, J) = 0
             ELSE
-                RAD_D_WR(I, J) = REAL(NAEnergyWR(I, K)) / (REAL(TSpecA(I)) - REAL(TSpecR(I)))
+                RAD_D_WR(I, J) = REAL(NAEnergyWR(I, J)) / (REAL(TSpecA(I)) - REAL(TSpecR(I)))
             ENDIF
         END DO
     END DO

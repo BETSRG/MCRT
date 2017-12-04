@@ -112,8 +112,8 @@ SUBROUTINE RectangularSurface()
     REAL(Prec2), DIMENSION(:, :) :: Vedge1(3), Vedge2(3), Vedge3(3) ! Dividing the rectangles into triangles
     REAL(Prec2) :: Randu, Randv
 
-    ! IF the energy is reflected THEN its location will be the point of intersection
-    IF( Reflected)THEN
+    ! If the energy is reflected then its location will be the point of intersection
+    IF(Reflected)THEN
         XLS(SIndex) = Xo(SInter)
         YLS(SIndex) = Yo(SInter)
         ZLS(SIndex) = Zo(SInter)

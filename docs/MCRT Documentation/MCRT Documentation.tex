@@ -1,0 +1,66 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{mathrsfs}
+
+\usepackage[round]{natbib} %bibliography citation style with round brackets
+
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[colorlinks,citecolor=Black,linkcolor=Black,urlcolor=Black,filecolor=Black]{hyperref}
+
+\linespread{1.5}
+
+\title{\textbf{Monte-Carlo Ray Tracing} \\ Program Documentation}
+\date{\today}
+\author{Matt S. Mitchell}
+
+\begin{document}
+
+\maketitle
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+
+Computation of the radiant energy exchange between surfaces within an enclosure often requires computation of view factors. For simplified geometries these view factors can be evaluated analytically or numerically. However, for more complicated geometries or for more complicated physical phenomena (e.g.~participating media or specular reflection), the view factors may need to be evaluated using the Monte-Carlo Method. In general, the Monte-Carlo method is a stochastic method which takes a model along with a set of potential input values, and then perturbs the input values randomly within a plausible range. From the model output, a probability distribution is generated which helps identify the most likely set of outcomes, given a random distribution of plausible input values.
+
+\cite{Nigusse2004}, as part of a class project for MAE 5823, applied this method to radiation heat transfer and created the Monte-Carlo Ray Tracing (MCRT) program. The program is used to solve for the distribution factors, $D_{ij}$, which are related to the total exchange areas, $\overline{S_i S_j}$, by Equation \ref{eq:dist-to-totExchArea}
+
+\begin{equation}
+	D_{ij} = \frac{\overline{S_i S_j}}{\varepsilon_i A_i}
+	\label{eq:dist-to-totExchArea}
+\end{equation}
+
+where, $\varepsilon_i$ is the surface emissivity and $A_i$ is the surface area. \cite{Modest2003}, and others commonly refer to this as the ``Script-F" view factor, $\mathscr{F}_{ij}$.
+
+Using the input information defined in Section \ref{sec:input}, the program defines surface equations for each surface. Then from each surface, $i$, the program emits a user-specified number of rays. Once the ray is absorbed by another surface, $j$, 1 is added to the distribution factor $D_{ij}$ for that surface. $D_{ij}$ is then normalized by the total number of surface rays emitted at the end of the simulation. The direction the ray is emitted or reflected depends on the respective surface type. Surface types and their behavior are described in the next section.
+
+\section{Surface Types}
+
+\subsection{DIF}
+
+\subsection{SDE}
+
+\section{Input}
+\label{sec:input}
+
+The program inputs define the following information: 
+\begin{itemize}
+	\item Vertices: each vertex location in an $(x,y,z)$ Cartesian coordinate system.
+	\item Surfaces: each surface is defined by its respective vertices.
+	\item Surface Types: each surface type may be defined which will determine how the surface is evaluated. If the surface definition is not provided, the surface is assumed to be a diffusely emitting surface.
+\end{itemize}
+
+\section{Output}
+
+\section{Known Issues}
+
+\newpage
+\renewcommand\bibname{References}
+\addcontentsline{toc}{section}{References}
+\bibliography{../references} %use main dissertation bibtex file
+\bibliographystyle{apalike}
+
+\end{document}
