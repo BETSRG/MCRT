@@ -76,8 +76,8 @@ function export_symbols() {
         elif [ "$2" == "release" ]; then
 
               #### these are for intel release
-            export FFLAGS="-O3 -DLINUX -fpp -fpe0 -I /usr/include -diag-disable 8290 -diag-disable 8291"
-            export LDFLAGS="-O3 -B /usr/lib"
+            export FFLAGS="-O2 -DLINUX -fpp -fpe0 -I /usr/include -diag-disable 8290 -diag-disable 8291"
+            export LDFLAGS="-O2 -B /usr/lib"
       
         fi
 
@@ -95,8 +95,8 @@ function export_symbols() {
         elif [ "$2" == "release" ]; then
 
               #### these are g95 release
-            export FFLAGS="-O3 -DLINUX -cpp -I /usr/include -ffree-line-length-huge"
-            export LDFLAGS="-O3 -B /usr/lib -B /usr/lib/x86_64-linux-gnu"
+            export FFLAGS="-O2 -DLINUX -cpp -I /usr/include -ffree-line-length-huge"
+            export LDFLAGS="-O2 -B /usr/lib -B /usr/lib/x86_64-linux-gnu"
 
         fi
                     
@@ -114,8 +114,8 @@ function export_symbols() {
         elif [ "$2" == "release" ]; then
 
               #### these are gfortran release
-            export FFLAGS="-O3 -DLINUX -cpp -I /usr/include -ffree-line-length-300"
-            export LDFLAGS="-O3 -B /usr/lib"
+            export FFLAGS="-O2 -DLINUX -cpp -I /usr/include -ffree-line-length-300"
+            export LDFLAGS="-O2 -B /usr/lib"
 
         fi
                 
@@ -133,8 +133,8 @@ function export_symbols() {
         elif [ "$2" == "release" ]; then
         
               #### these are for mingw release
-            export FFLAGS="-O3 -DLINUX -cpp -I /usr/include  -ffree-line-length-300"
-            export LDFLAGS="-O3 -B /usr/lib -static-libgcc -static-libgfortran"
+            export FFLAGS="-O2 -DLINUX -cpp -I /usr/include  -ffree-line-length-300"
+            export LDFLAGS="-O2 -B /usr/lib -static-libgcc -static-libgfortran"
 
         fi
                 
