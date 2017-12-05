@@ -2,14 +2,44 @@
 
 \usepackage{geometry}
 \usepackage{graphicx}
+
+% script F
 \usepackage{mathrsfs}
 
+% tight spacing on lists
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+% bibliography
 \usepackage[round]{natbib} %bibliography citation style with round brackets
 
+% colors
 \usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+
+% in-document hyper refs
 \usepackage[colorlinks,citecolor=Black,linkcolor=Black,urlcolor=Black,filecolor=Black]{hyperref}
 
-\linespread{1.5}
+% in-text listing
+\usepackage{listings}
+
+% listings style
+\lstset{
+  backgroundcolor=\color{light-gray},
+  basicstyle=\ttfamily\scriptsize,
+  breakatwhitespace=false,
+  breaklines=true,
+  frame=single,
+  keepspaces=true,
+}
+
+% SI units package
+\usepackage{siunitx}
+\sisetup{per-mode = symbol}
+
+
+% line spacing
+\linespread{1.3}
 
 \title{\textbf{Monte-Carlo Ray Tracing} \\ Program Documentation}
 \date{\today}
@@ -29,33 +59,218 @@ Computation of the radiant energy exchange between surfaces within an enclosure 
 \cite{Nigusse2004}, as part of a class project for MAE 5823, applied this method to radiation heat transfer and created the Monte-Carlo Ray Tracing (MCRT) program. The program is used to solve for the distribution factors, $D_{ij}$, which are related to the total exchange areas, $\overline{S_i S_j}$, by Equation \ref{eq:dist-to-totExchArea}
 
 \begin{equation}
-	D_{ij} = \frac{\overline{S_i S_j}}{\varepsilon_i A_i}
-	\label{eq:dist-to-totExchArea}
+    D_{ij} = \frac{\overline{S_i S_j}}{\varepsilon_i A_i}
+    \label{eq:dist-to-totExchArea}
 \end{equation}
 
-where, $\varepsilon_i$ is the surface emissivity and $A_i$ is the surface area. \cite{Modest2003}, and others commonly refer to this as the ``Script-F" view factor, $\mathscr{F}_{ij}$.
+where, $\varepsilon_i$ is the surface emissivity and $A_i$ is the surface area. \cite{Modest2003}, and others commonly refer to this as the ``Script-F" view factor, $\mathscr{F}_{ij}$. With these distribution factors, users can apply the net-radiant exchange or zonal methods to solve for the radiant energy exchange within an enclosure.
 
-Using the input information defined in Section \ref{sec:input}, the program defines surface equations for each surface. Then from each surface, $i$, the program emits a user-specified number of rays. Once the ray is absorbed by another surface, $j$, 1 is added to the distribution factor $D_{ij}$ for that surface. $D_{ij}$ is then normalized by the total number of surface rays emitted at the end of the simulation. The direction the ray is emitted or reflected depends on the respective surface type. Surface types and their behavior are described in the next section.
+A description of the methodology used to compute the distribution factors is given in Section \ref{sec:method}. Information regarding program input and output can be found in Sections \ref{sec:input} and \ref{sec:output}, respectively. Finally, recommended future work is described in Section \ref{sec:future work}.
 
-\section{Surface Types}
+\section{Methodology}
+\label{sec:method}
 
-\subsection{DIF}
-
-\subsection{SDE}
+Using the input information defined in Section \ref{sec:input}, the program defines surface equations for each surface. Then from each surface, $i$, the program emits a user-specified number of rays. Once the ray is absorbed by another surface, $j$, 1 is added to the distribution factor $D_{ij}$ for that surface. $D_{ij}$ is then normalized by the total number of surface rays emitted by surface $i$ at the end of the simulation. The direction the ray is emitted or reflected depends on the respective surface type.
 
 \section{Input}
 \label{sec:input}
 
-The program inputs define the following information: 
-\begin{itemize}
-	\item Vertices: each vertex location in an $(x,y,z)$ Cartesian coordinate system.
-	\item Surfaces: each surface is defined by its respective vertices.
-	\item Surface Types: each surface type may be defined which will determine how the surface is evaluated. If the surface definition is not provided, the surface is assumed to be a diffusely emitting surface.
-\end{itemize}
+MCRT leverages the input format used by the View3D program \citep{Walton2002}. In general both  programs require a list of vertex locations and surface definitions. In addition to this, MCRT will also take a list of surface types which define how each surface behaves within the Monte-Carlo simulation. If the surface type is omitted, the program will assume default values of ``DIF" for each program, which is described in Section \ref{s-s-sec:dif}.
+
+\subsection{Input Files}
+
+\subsubsection{input.vs3}
+
+The input.vs3 file will contain all of the information defined in Sections \ref{subsec:verts}--\ref{subsec:comments}. The file must be named ``input.vs3" and be located in the same directory as the MCRT executable. An example input.vs3 file is provide below.
+
+\begin{lstlisting}
+!   #   x   y   z
+V   1   8   0   0
+V   2  13   0   0
+V   3  13   8   0
+V   4   8  13   0
+V   5   0  13   0
+V   6   0   8   0
+V   7   8   8   0
+V   8   8   0   5
+V   9  13   0   5
+V  10  13   8   5
+V  11   8  13   5
+V  12   0  13   5
+V  13   0   8   5
+V  14   8   8   5
+!   #  v1  v2  v3  v4 base cmb  emit   name      surface data
+S   1   8   9   2   1   0   0   0.90   South-Wall-Bottom-(SDE)
+S   2   9  10   3   2   0   0   0.90   East-Wall
+S   3  10  11   4   3   0   0   0.99   Angle-Wall
+S   4  11  12   5   4   0   0   0.90   North-Wall
+S   5  12  13   6   5   0   0   0.90   West-Wall-Top
+S   6  13  14   7   6   0   0   0.90   South-Wall-Top
+S   7  14   8   1   7   0   0   0.90   West-Wall-Bottom
+S   8   1   2   3   7   0   0   0.90   South-Floor
+S   9   7   3   4   0   0   8   0.90   Angle-Floor
+S  10   4   5   6   7   0   8   0.90   North-Floor
+S  11  14  10   9   8   0   0   0.90   South-Ceiling
+S  12  14  11  10   0   0   11  0.90   Angle-Ceiling
+S  13  13  12  11  14   0   11  0.90   North-Ceiling
+! #  Type
+T 1  SDE  0  1  0
+T 2  DIF
+\end{lstlisting}
+
+\subsubsection{input.TK}
+
+The input.TK file will contain the surface temperatures, in Kelvin, for all surfaces. The file must be named ``input.TK" and be located in the same directory as the MCRT executable.
+
+Using this information, MCRT will calculate a heat balance on all surfaces in the enclosure using the Zonal method which is outlined below. The blackbody emissive power for surface $i$ is given by Equation \ref{eq:bbpower}
+
+\begin{equation}
+    E_{b,i} = \sigma T_i^4
+    \label{eq:bbpower}
+\end{equation}
+
+where, $\sigma$ is the Stefan-Boltzmann constant \SI{5.67E-8}{\watt\per\meter\squared\per\kelvin\tothe{4}} and $T_i$ is the surface temperature in Kelvin.
+
+The surface heat balance for surface $i$ is given in Equation \ref{eq:zonal}.
+
+\begin{equation}
+    Q_i = \varepsilon_i E_{b,i} A_i - \sum_{j=1}^N \varepsilon_j E_{b,j} A_j D_{ij}
+    \label{eq:zonal}
+\end{equation}
+
+An example input.TK file is given below.
+
+\begin{lstlisting}
+1  1  300
+2  2  300
+3  3  300
+4  4  300
+5  5  300
+6  6  300
+7  7  300
+8  8  300
+9  9  300
+10 10 300
+11 11 300
+12 12 300
+13 13 300
+14 14 300
+0  0  0
+\end{lstlisting}
+
+As currently programmed, column 1 indicates the lowest surface number a continuous list of surfaces which contain the same temperature. Column 2 indicates the largest surface number in this same continuous list of surfaces. If, say, for example surfaces 1--5 have a temperature of \SI{200}{\kelvin}, and surfaces 6--14 have a temperature of \SI{300}{\kelvin}, the following input file would also be valid. The last line of the file must be ``0 0 0".
+
+\begin{lstlisting}
+1  5  200
+6 14  300
+0  0  0
+\end{lstlisting}
+
+\subsubsection{parameters.txt}
+
+The parameters.txt file will contain two lines of information. The first line indicates the number of rays to be emitted per surface; the second line indicates whether the simulation is to populate the ``logfile.dat" file which is used by the Ray Tracing Visualization Tool (RTVT) program \footnote{Reference needed.} \footnote{RTVT is a graphical program which will read the logfile.dat file, render a wireframe mesh of the enclosure, and trace the rays from surface to surface. This program is not suited to render any more than a few hundred rays per surface and no more than 24--36 surfaces.}. A value of ``1" indicates the file is to be populated; any other value will not populate the logfile.
+
+The the file must be name ``parameters.txt" and be located in the same directory as the MCRT executable. An example input file is shown below, where 1000 rays per surface are to be emitted, and no log file is to be written.
+
+\begin{lstlisting}
+1000
+2
+\end{lstlisting}
+
+\subsection{Vertices}
+\label{subsec:verts}
+
+Input for each vertex require a vertex number and location in an $(x,y,z)$ Cartesian coordinate system, as shown below. The vertices need to be numbered uniquely, with non-negative integer values beginning at 1. Vertices may be entered out of order and the prefix ``V" must be used at the beginning of each vertex line. Currently, the each vertex location must be positive, i.e. remain within quadrant I of a Cartesian coordinate system. All vertex definitions must be entered in the text input file prior to the surface definitions.
+
+\begin{lstlisting}
+!   #   x   y   z
+V   1   8   0   0
+V   2  13   0   0
+V   3  13   8   0
+V   4   8  13   0
+V   5   0  13   0
+V   6   0   8   0
+V   7   8   8   0
+V   8   8   0   5
+V   9  13   0   5
+V  10  13   8   5
+V  11   8  13   5
+V  12   0  13   5
+V  13   0   8   5
+V  14   8   8   5
+\end{lstlisting}
+
+\subsection{Surfaces}
+\label{subsec:surfs}
+Each surface is defined by a number, its respective vertices, and a number of surface properties which are partially an artifact using View3D input files as a starting template. Example surface inputs are shown below. Surfaces must begin with the prefix ``S" and be given a unique non-negative integer surface number beginning at 1. 
+    
+\begin{lstlisting}
+!   #  v1  v2  v3  v4 base cmb  emit   name
+S   1   8   9   2   1   0   0   0.90   South-Wall-Bottom-(SDE)
+S   2   9  10   3   2   0   0   0.90   East-Wall
+S   3  10  11   4   3   0   0   0.99   Angle-Wall
+S   4  11  12   5   4   0   0   0.90   North-Wall
+S   5  12  13   6   5   0   0   0.90   West-Wall-Top
+S   6  13  14   7   6   0   0   0.90   South-Wall-Top
+S   7  14   8   1   7   0   0   0.90   West-Wall-Bottom
+S   8   1   2   3   7   0   0   0.90   South-Floor
+S   9   7   3   4   0   0   8   0.90   Angle-Floor
+S  10   4   5   6   7   0   8   0.90   North-Floor
+S  11  14  10   9   8   0   0   0.90   South-Ceiling
+S  12  14  11  10   0   0   11  0.90   Angle-Ceiling
+S  13  13  12  11  14   0   11  0.90   North-Ceiling
+\end{lstlisting}
+
+References to the vertex numbers defined previously are given in columns v1--v4. For triangular surfaces, v4 will be ``0". The ``base" column is not used. The ``cmb" column indicates which surface the current surface should be combined with. For example, above surfaces 9 and 10 are to combine with surface 8 to form a single surface, and surfaces 12 and 13 are to combine with surface 11 to form a single surface. The surfaces will be evaluated individually within the MCRT program, but will be combined for reporting purposes at the end of the simulation. ``Emit" is the surface emittance, or emissivity, and the ``name" column indicates the surface name, which is truncated to 10 characters in length.
+
+\subsection{Surface Types}
+\label{subsec:surftypes}
+Surface types define how each surface is evaluated within MCRT. If the surface definition is not provided, the surface is assumed to be a diffusely emitting surface. Descriptions of the surface type definitions are provided below.
+
+\subsubsection{DIF---Diffuse}
+\label{s-s-sec:dif}
+
+\subsubsection{SDE}
+
+\subsubsection{SDR}
+
+\subsubsection{DRO}
+Nothing is programmed for this...
+
+\subsection{Comment Lines}
+\label{subsec:comments}
+Comment lines begin with an ``!" and are not read by the program.
 
 \section{Output}
+\label{sec:output}
 
-\section{Known Issues}
+\subsection{MCOutput.txt}
+
+\subsection{logfile.dat}
+
+
+\section{Future Work}
+\label{sec:future work}
+
+\begin{itemize}
+    \item Features
+    \begin{itemize}
+        \item Reflectance Models
+        \item Participating Media
+    \end{itemize}
+    
+    \item Programming
+    \begin{itemize}
+        \item Command Line Arguments
+        \item Negative Vertex Coordinates
+        \item Heat Balance Inputs
+        \item Testing
+        \item Continuous Integration (CI) Improvements
+        \item General Code Refactoring
+    \end{itemize}
+    
+    \item RTVT
+\end{itemize}
 
 \newpage
 \renewcommand\bibname{References}

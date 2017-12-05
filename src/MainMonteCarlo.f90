@@ -8,9 +8,9 @@ PROGRAM MainMonteCarlo
     USE EnergyBundleLocation
     USE IntersectionEnergySurface
     USE EnergyAbsorbedReflected
-    USE Distribution_Factors
+    USE DistributionFactors
     USE EnergyBalance
-    USE OutPut
+    USE Output
 
     IMPLICIT NONE
     INTEGER :: I, J, K, IOS, Index, logfileint

@@ -1,4 +1,4 @@
-MODULE Distribution_Factors
+MODULE DistributionFactors
 
 USE Global
 USE EnclosureGeometry
@@ -202,4 +202,4 @@ SUBROUTINE RadDistributionFactors
     RETURN
 END SUBROUTINE RadDistributionFactors
 
-END MODULE Distribution_Factors
+END MODULE DistributionFactors

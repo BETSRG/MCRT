@@ -1,4 +1,3 @@
-
 MODULE EnergyBundleLocation
 
 !********************************************************************************
@@ -20,9 +19,9 @@ CONTAINS
 SUBROUTINE EnergySourceLocation()
 !********************************************************************************
 !
-!   Purpose:    Checks whether the surface rectangular or triangular, THEN calls
-!               the appropriate subroutine. IF the fourth vertex index is zero
-!               THEN the polygon is triangular, else it is rectangular
+!   Purpose:    Checks whether the surface rectangular or triangular, then calls
+!               the appropriate subroutine. If the fourth vertex index is zero
+!               then the polygon is triangular, else it is rectangular
 !
 !********************************************************************************
     CALL RANDOM_NUMBER(Rand)

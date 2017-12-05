@@ -2,3 +2,10 @@
 *.bak
 *.sav
 *.skb
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.gz
+*.toc

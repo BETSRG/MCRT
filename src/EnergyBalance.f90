@@ -5,7 +5,7 @@ USE EnclosureGeometry
 USE EnergyBundleLocation
 USE IntersectionEnergySurface
 USE EnergyAbsorbedReflected
-USE Distribution_Factors
+USE DistributionFactors
 
 IMPLICIT NONE
 CONTAINS
@@ -36,7 +36,7 @@ SUBROUTINE RadiationBalance
 
     ! Read and assign surface temperatures
     DO I = 1, NSurf
-        READ(7, *)LWL, UPL, T
+        READ(7, *) LWL, UPL, T
         IF(LWL == 0)EXIT
         DO J = LWL, UPL
             Ts(J) = T

@@ -1,4 +1,3 @@
-
 MODULE Global
 !	OKlahoma State University
 !	School of Mechanical And Aerospace Engineering

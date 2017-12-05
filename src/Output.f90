@@ -1,12 +1,11 @@
-
-MODULE OutPut
+MODULE Output
 
 USE Global
 USE EnclosureGeometry
 USE EnergyBundleLocation
 USE IntersectionEnergySurface
 USE EnergyAbsorbedReflected
-USE Distribution_Factors
+USE DistributionFactors
 USE EnergyBalance
 
 IMPLICIT NONE
@@ -87,4 +86,4 @@ SUBROUTINE PrintViewFactorHeatFlux()
 107  FORMAT(//, 8x, A14, 1x, F14.2, x, A1)
 
     END SUBROUTINE PrintViewFactorHeatFlux
- END MODULE OutPut
+ END MODULE Output
