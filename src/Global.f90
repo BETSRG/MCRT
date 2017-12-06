@@ -53,6 +53,7 @@ SAVE
     INTEGER , ALLOCATABLE, DIMENSION(:)     :: CMB              ! Index for surfaces to be combined
 
     REAL(Prec2), ALLOCATABLE, DIMENSION(:)  :: EMIT         ! Emissivities of surfaces
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:)  :: EMIT_cmb     ! Emissivities of combined surfaces
     REAL(Prec2), ALLOCATABLE, DIMENSION(:)  :: TS           ! surface Temperature, K
     REAL(Prec2), ALLOCATABLE, DIMENSION(:)  :: BASEP        ! Reference Point
     REAL(Prec2)                             :: Rand(7)      ! Random number (0 - 1)
@@ -105,7 +106,8 @@ SAVE
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   WIDTH        ! width of a surface
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   LENGTH       ! Length of a surface
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   HEIGHT       ! Height of a surface
-    REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   Area         ! Area of a Surface
+    REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   Area         ! Area of a surface
+    REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   Area_cmb     ! Area of a combined surfaces
 
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   A            ! Coefficient of X in Surface equation
     REAL(prec2), ALLOCATABLE, DIMENSION(:) ::   B            ! Coefficient of Y in Surface equation

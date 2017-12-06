@@ -18,19 +18,21 @@ PROGRAM MainMonteCarlo
     ! Initialize the CPU time
     CALL CPU_TIME(TIME1)
 
-    OPEN (Unit = 2, file = 'input.vs3', status = 'unknown', Action = 'READ', IOSTAT = IOS)
-    OPEN (Unit = 3, file = 'MCoutput.txt', status = 'unknown', IOSTAT = IOS)     ! Diffuse bundles and distribution factors
-    OPEN (Unit = 4, file = 'logfile.dat', status = 'unknown', IOSTAT = IOS)      ! Ray emission, reflection, and absorption points
-    OPEN (Unit = 6, File = 'SpecularDF.out', status = 'unknown', IOSTAT = IOS)   ! Total Specular bundles and distribution factors
-    OPEN (Unit = 7, File = 'input.TK', status = 'unknown', IOSTAT = IOS)         ! Surface temperatures
-    OPEN (Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)       ! Geometry and ray data for RTVT
-    OPEN (Unit = 9, File = 'SpecReflecDF.out', status = 'unknown', IOSTAT = IOS) ! Reflected and rereflected Specular bundles and distribution factors
-    OPEN (Unit = 10, File = 'SpecWRDF.out', status = 'unknown', IOSTAT = IOS)    ! Non-Reflected AKA absorbed on first intersection Specular bundles and distribution factors
-    OPEN (Unit = 11, File = 'DebugFile.txt', status = 'unknown', IOSTAT = IOS)   ! Lists rays that are not finding intersection points and whether they're reflected or not
+    OPEN(Unit = 2, file = 'input.vs3', status = 'unknown', Action = 'READ', IOSTAT = IOS)
+    OPEN(Unit = 3, file = 'MCoutput.txt', status = 'unknown', IOSTAT = IOS)     ! Diffuse bundles and distribution factors
+    OPEN(Unit = 4, file = 'logfile.dat', status = 'unknown', IOSTAT = IOS)      ! Ray emission, reflection, and absorption points
+    OPEN(Unit = 6, File = 'SpecularDF.out', status = 'unknown', IOSTAT = IOS)   ! Total Specular bundles and distribution factors
+    OPEN(Unit = 7, File = 'input.TK', status = 'unknown', IOSTAT = IOS)         ! Surface temperatures
+    OPEN(Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)       ! Geometry and ray data for RTVT
+    OPEN(Unit = 9, File = 'SpecReflecDF.out', status = 'unknown', IOSTAT = IOS) ! Reflected and rereflected Specular bundles and distribution factors
+    OPEN(Unit = 10, File = 'SpecWRDF.out', status = 'unknown', IOSTAT = IOS)    ! Non-Reflected AKA absorbed on first intersection Specular bundles and distribution factors
+    OPEN(Unit = 11, File = 'DebugFile.txt', status = 'unknown', IOSTAT = IOS)   ! Lists rays that are not finding intersection points and whether they're reflected or not
+
+    OPEN(Unit = 12, File = 'diffuse.csv', status = 'unknown', IOSTAT = IOS)     ! csv file with diffuse distribution factors
 
     ! Read simulation parameters
-    READ (8, *) NBundles
-    READ (8, *) logfileint
+    READ(8, *) NBundles
+    READ(8, *) logfileint
     CLOSE(Unit = 8)
 
     IF (logfileint == 1) THEN
@@ -164,5 +166,6 @@ PROGRAM MainMonteCarlo
     CLOSE(Unit = 9)
     CLOSE(Unit = 10)
     CLOSE(Unit = 11)
+    CLOSE(Unit = 12)
     STOP
 END PROGRAM MainMonteCarlo

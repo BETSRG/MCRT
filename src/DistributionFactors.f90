@@ -21,10 +21,12 @@ SUBROUTINE RadDistributionFactors
     INTEGER :: I, J, K, L, IOS
     INTEGER, ALLOCATABLE, DIMENSION(:) :: NumEmitted, NumReflected, NumReReflec, NumEmitted_cmb, NumReflected_cmb, NumReReflect_cmb
     INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergy_cmb, NAEnergyS_cmb, NAEnergyR_cmb, NAEnergyWR_cmb
+    REAL(prec2), ALLOCATABLE, DIMENSION(:) :: Area_cmb_temp, Emit_cmb_temp
     ALLOCATE(NumEmitted(NSurf), STAT = IOS)
 
     ALLOCATE(RAD_D_F(NSurf, NSurf), RAD_D_S(NSurf, NSurf), RAD_D_R(NSurf, NSurf), RAD_D_WR(NSurf, NSurf), STAT = IOS)
     ALLOCATE(NAEnergy_cmb(NSurf, NSurf), NAEnergyS_cmb(NSurf, NSurf), NAEnergyR_cmb(NSurf, NSurf), NAEnergyWR_cmb(NSurf, NSurf), STAT = IOS)
+    ALLOCATE(Area_cmb_temp(NSurf), Emit_cmb_temp(NSurf), STAT = IOS)
 
     ! Populate array for orignial surfaces
     DO I = 1, NSurf
@@ -74,6 +76,7 @@ SUBROUTINE RadDistributionFactors
     NSurf_cmb = NSurf - N_SCMB
 
     ALLOCATE(RAD_D_F_cmb(NSurf_cmb, NSurf_cmb), RAD_D_S_cmb(NSurf_cmb, NSurf_cmb), RAD_D_R_cmb(NSurf_cmb, NSurf_cmb), RAD_D_WR_cmb(NSurf_cmb, NSurf_cmb), STAT = IOS)
+    ALLOCATE(Area_cmb(NSurf_cmb), Emit_cmb(NSurf_cmb), STAT = IOS)
 
     ! Copy over to arrays we can edit
     NAEnergy_cmb = NAEnergy
@@ -82,14 +85,10 @@ SUBROUTINE RadDistributionFactors
     NAEnergyWR_cmb = NAEnergyWR
 
     ! Initialize arrays
-    DO I = 1, NSurf_cmb
-      DO J = 1, NSurf_cmb
-          RAD_D_F_cmb(I, J) = 0
-          RAD_D_S_cmb(I, J) = 0
-          RAD_D_R_cmb(I, J) = 0
-          RAD_D_WR_cmb(I, J) = 0
-      END DO
-    END DO
+    RAD_D_F_cmb = 0
+    RAD_D_S_cmb = 0
+    RAD_D_R_cmb = 0
+    RAD_D_WR_cmb = 0
 
     ! Combine count
     DO I = 1, NSurf
@@ -196,6 +195,35 @@ SUBROUTINE RadDistributionFactors
                     END IF
                 END IF
             END DO
+        END IF
+    END DO
+
+    ! Combined surface areas
+    ! Combined surface emittances
+    ! Use area weighting
+    Area_cmb = 0
+    Area_cmb_temp = 0
+    Emit_cmb = 0
+    Emit_cmb_temp = 0
+
+    DO I = 1, NSurf
+        IF (CMB(I) == 0) THEN
+            Area_cmb_temp(I) = Area(I)
+            Emit_cmb_temp(I) = EMIT(I) * Area(I)
+        ELSE
+            Area_cmb_temp(CMB(I)) = Area_cmb_temp(CMB(I)) + Area(I)
+            Emit_cmb_temp(CMB(I)) = Emit_cmb_temp(CMB(I)) + EMIT(I) * Area(I)
+        END IF
+    END DO
+
+    J = 0
+    DO I = 1, NSurf
+        IF (Area_cmb_temp(I) == 0) THEN
+            CYCLE
+        ELSE
+            J= J + 1
+            Area_cmb(J) = Area_cmb_temp(I)
+            Emit_cmb(J) = Emit_cmb_temp(I) / Area_cmb(J)
         END IF
     END DO
 

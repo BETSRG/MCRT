@@ -39,7 +39,7 @@ SUBROUTINE PrintViewFactorHeatFlux()
     IMPLICIT NONE
     INTEGER        :: I, J, K, Index
 
-    !  WRITE the Title of the Program and Output data
+    ! WRITE the Title of the Program and Output data
     WRITE(3, 101)'Monte Carlo Method', 'PURPOSE:', 'Calculates The View &
                  Factors Using Monte Carlo Method', 'and', 'The Net Radiation &
                  Heat Flux at Each Surface'
@@ -47,9 +47,9 @@ SUBROUTINE PrintViewFactorHeatFlux()
 
     DO K = 1, NSurf
         WRITE(3, 1001)NAEnergy(K, :), TCOUNTA(K)
-        WRITE(6, 1001)NAEnergyS(K, :), TSpecA(K) !JH !Writing the number of total specular rays absorbed at each surface
-        WRITE(9, 1001)NAEnergyR(K, :), TSpecR(K) !Writing the number of reflected specular rays absorbed at each surface
-        WRITE(10, 1001)NAEnergyWR(K, :), (TSpecA(K) - TSpecR(K))   !Writing the number of specular rays absorbed on first contact at each surface
+        WRITE(6, 1001)NAEnergyS(K, :), TSpecA(K) ! JH !Writing the number of total specular rays absorbed at each surface
+        WRITE(9, 1001)NAEnergyR(K, :), TSpecR(K) ! Writing the number of reflected specular rays absorbed at each surface
+        WRITE(10, 1001)NAEnergyWR(K, :), (TSpecA(K) - TSpecR(K))   ! Writing the number of specular rays absorbed on first contact at each surface
     END DO
 
 1001 FORMAT(2x, 100(x, I8), I10)
@@ -62,14 +62,22 @@ SUBROUTINE PrintViewFactorHeatFlux()
 1002 FORMAT(//)
 
      DO Index = 1, NSurf_cmb
-        WRITE(3, 102)(RAD_D_F_cmb(Index, J), J = 1, NSurf_cmb)   !Diffuse distribution factors
-        WRITE(6, 102)(RAD_D_S_cmb(Index, J), J = 1, NSurf_cmb)   !Total specular distribution factors
-        WRITE(9, 102)(RAD_D_R_cmb(Index, J), J = 1, NSurf_cmb)   !Reflected specular distribution factors
-        WRITE(10, 102)(RAD_D_WR_cmb(Index, J), J = 1, NSurf_cmb) !Absorbed at first intersection specular distribution factors
+        WRITE(3, 102)(RAD_D_F_cmb(Index, J), J = 1, NSurf_cmb)   ! Diffuse distribution factors
+        WRITE(6, 102)(RAD_D_S_cmb(Index, J), J = 1, NSurf_cmb)   ! Total specular distribution factors
+        WRITE(9, 102)(RAD_D_R_cmb(Index, J), J = 1, NSurf_cmb)   ! Reflected specular distribution factors
+        WRITE(10, 102)(RAD_D_WR_cmb(Index, J), J = 1, NSurf_cmb) ! Absorbed at first intersection specular distribution factors
      END DO
 
-     !Writing the rest of the outputs for MCOutput.txt
-102  FORMAT(4x, 100(2x, f8.6))
+    ! Write csv file for combined surface
+302  FORMAT(f10.6, 100(',', f10.6))
+    WRITE(12, 302)(Area_cmb(I), I = 1, NSurf_cmb)
+    DO I = 1, NSurf_cmb
+        WRITE(12, 302)(RAD_D_F_cmb(I, J), J = 1, NSurf_cmb)
+    END DO
+    WRITE(12, 302)(Emit_cmb(I), I = 1, NSurf_cmb)
+
+    ! Writing the rest of the outputs for MCOutput.txt
+102  FORMAT(4x, 100(2x, f10.6))
 
      WRITE(3, 103)'Index', 'SURF_NAME', 'Temperature', 'Emissivity', 'Heat Flux', 'Heat Transfer Rate'
 
