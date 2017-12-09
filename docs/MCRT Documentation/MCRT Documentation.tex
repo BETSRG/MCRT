@@ -18,7 +18,7 @@
 \definecolor{light-gray}{gray}{0.95}
 
 % in-document hyper refs
-\usepackage[colorlinks,citecolor=Black,linkcolor=Black,urlcolor=Black,filecolor=Black]{hyperref}
+\usepackage[colorlinks,citecolor=Black,linkcolor=Black,urlcolor=Black,filecolor=Black]{hyperref} 
 
 % in-text listing
 \usepackage{listings}
@@ -57,7 +57,7 @@
 
 \section{Introduction}
 
-Computation of the radiant energy exchange between surfaces within an enclosure often requires computation of view factors. For simplified geometries these view factors can be evaluated analytically or numerically. However, for more complicated geometries or for more complicated physical phenomena (e.g.~participating media or specular reflection), the view factors may need to be evaluated using the Monte-Carlo Method. In general, the Monte-Carlo method is a stochastic method which takes a model along with a set of potential input values, and then perturbs the input values randomly within a plausible range. From the model output, a probability distribution is generated which helps identify the most likely set of outcomes, given a random distribution of plausible input values.
+Computation of the radiant energy exchange between surfaces within an enclosure often requires computation of view factors. For simplified geometries these view factors can be evaluated analytically or numerically. However, for more complicated geometries or for more complicated physical phenomena (e.g.~participating media or specular reflection), the view factors may need to be evaluated using the Monte-Carlo Method. In general, the Monte-Carlo method is a stochastic method which takes a model along with a set of potential input values, and then perturbs the input values randomly within a plausible range. From the model output, a probability distribution function is generated which helps identify the most likely set of outcomes, given a random distribution of plausible input values.
 
 \cite{Nigusse2004}, as part of a class project for MAE 5823, applied this method to radiation heat transfer and created the Monte-Carlo Ray Tracing (MCRT) program. The program is used to solve for the distribution factors, $D_{ij}$, which are related to the total exchange areas, $\overline{S_i S_j}$, by Equation \ref{eq:dist-to-totExchArea}
 
@@ -68,7 +68,7 @@ Computation of the radiant energy exchange between surfaces within an enclosure 
 
 where, $\varepsilon_i$ is the surface emissivity and $A_i$ is the surface area. \cite{Modest2003}, and others commonly refer to this as the ``Script-F" view factor, $\mathscr{F}_{ij}$. With these distribution factors, users can apply the net-radiant exchange or zonal methods to solve for the radiant energy exchange within an enclosure.
 
-A description of the methodology used to compute the distribution factors is given in Section \ref{sec:method}. Information regarding program input and output can be found in Sections \ref{sec:input} and \ref{sec:output}, respectively. Finally, recommended future work is described in Section \ref{sec:future work}.
+A description of the methodology used to compute the distribution factors is given in Section \ref{sec:method}. Information regarding program input and output can be found in Sections \ref{sec:input} and \ref{sec:output}, respectively. A limited set of tests are outlined in Section \ref{sec:testing}. Finally, recommended future work is described in Section \ref{sec:future work}.
 
 \section{Methodology}
 \label{sec:method}
@@ -277,6 +277,7 @@ Comment lines begin with an ``!" and are not read by the program.
 \subsection{logfile.dat}
 
 \section{Testing}
+\label{sec:testing}
 
 
 \section{Future Work}
@@ -291,7 +292,7 @@ The following list outlines the some of the program's deficiencies. Some of thes
 
 	\item Participating Media: the current program does not simulate participating media, but this would be an interesting feature to add. A major hurdle that needs to be overcome to solve this problem is that of gridding the domain. Participating media is a volumetric phenomena, and therefore the volume of the enclosure needs to be broken in to smaller blocks which all need to interact with one another. A first pass at accomplishing this task would be to handle rectangular-only enclosures first, then work to develop a more generalized code base.
 
-	\item Adaptive Solution: current program emits the user-specified number at each run. An adaptive solution could be implemented which will run, say, \SI{1E5}{} rays then run another \SI{1E5}{} rays and compare the solutions. If the distribution factors for \SI{1E5}{} is within a user-specified tolerance, the solution could stop there at \SI{2E5}{} rays. If not, another \SI{1E5}{} rays could be run and the check repeated until the solutions converge to within tolerance. The tolerance, step-size, and max/min number of rays should all be user-defined parameters.
+	\item Adaptive Solution: current program emits the user-specified number at each run. An adaptive solution could be implemented which will run, say, \SI{1E5}{} rays then run another \SI{1E5}{} rays and compare the solutions. If the difference between the distribution factors for \SI{1E5}{} and \SI{2E5}{} is within a user-specified tolerance, the solution could stop there. If not, another \SI{1E5}{} rays could be run and the check repeated until the solutions converge to within tolerance. The tolerance, step-size, and max/min number of rays should all be user-defined parameters.
 \end{itemize}
 
 \subsection{Programming}
@@ -303,9 +304,11 @@ The following list outlines the some of the program's deficiencies. Some of thes
 
     \item Heat Balance Inputs: some cleanup could occur for the heat balance inputs, i.e. the input.TK file. First would be to require no ``0 0 0" to indicate the end of the file. The second may be to develop a better input scheme for the data.
 
-    \item Testing: the program only has a limited number of documented tests, none of which occurred recently. This should be integrated with the next bullet point, Continuous Integration. In general, the idea is to develop sets of tests based on independent reference data which are run continuously during the development process to ensure the program works.
+    \item Testing: the program only has a limited number of documented tests. This should be integrated with the next bullet point, Continuous Integration. In general, the idea is to develop sets of tests based on independent reference data which are run continuously during the development process to ensure the program works.
 
-    \item Continuous Integration (CI): continuous integration works by developing sets of tests which are run automatically during the development process. Ideally this happens when an incremental change occurs. As of writing this, the MCRT is building on Travis-CI (\url{https://travis-ci.org/BETSRG/MCRT}). Any tests that can be run to verify that the code is working should be added to this. The CI environment can also be leveraged to automatically generate ``release" versions of MCRT. When the ``Create a new release" button on the MCRT GitHub repository has been hit (\url{https://github.com/BETSRG/MCRT/releases/new}), CI can be configured to automatically build the \LaTeX ~documentation, build executables for any Windows, Mac, and Linux platform, and post them to the Release page on the MCRT GitHub repository.
+    \item Continuous Integration (CI): continuous integration works by developing sets of tests which are run automatically during the development process. Ideally this happens when an incremental change occurs. As of writing this, the MCRT is building on Travis-CI (\url{https://travis-ci.org/BETSRG/MCRT}) using the gfortran compiler. Any tests that can be run to verify that the code is working should be added to this. The CI environment can also be leveraged to automatically generate ``release" versions of MCRT. When the ``Create a new release" button on the MCRT GitHub repository has been hit (\url{https://github.com/BETSRG/MCRT/releases/new}), CI can be configured to automatically build the \LaTeX ~documentation, build executables for any Windows, Mac, and Linux platform, and post them to the Release page on the MCRT GitHub repository.
+    
+    Another issue related to this is selecting the best compiler for a cross-platform project. The current CI compiler, gfortran, will not issue any status messages to the terminal. See this stack overflow post for more information: \url{https://stackoverflow.com/questions/36235641/console-output-stdio-does-not-work-on-windows-cross-compiled-with-mingw32}.
 
     \item General Code Refactoring: the code relies on global variables everywhere in the code. Some thought should be given to a better code architecture which facilitates code reuse and facilitates program modifications.
 
