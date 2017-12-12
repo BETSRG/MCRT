@@ -90,7 +90,7 @@ PROGRAM MainMonteCarlo
         END IF
 
         ! Update progress bar
-        CALL Progress(SIndex, NSurf)
+        CALL Progress(SIndexRef, NSurf)
 
     END DO
 

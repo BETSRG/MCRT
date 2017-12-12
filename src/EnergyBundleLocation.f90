@@ -172,8 +172,7 @@ SUBROUTINE InitializeSeed()
 
     CALL SYSTEM_CLOCK(COUNT = clock)
 
-    !seed = clock + 104729 * (/ (i - 1, i = 1, n) /)
-    seed = 39 * (/ (i - 1, i = 1, n) /)
+    seed = clock + 104729 * (/ (i - 1, i = 1, n) /)
     CALL RANDOM_SEED(PUT = seed)
 
     DEALLOCATE(seed)
@@ -295,16 +294,16 @@ SUBROUTINE DirectionEmittedEnergy()
             SurfNorm(3) = NormalUV(SIndex, 3)
 
             !Taking the incoming direction from the specified emission direction
-            IF (ReflecCount .EQ. 1) THEN  !If the ray is being reflected for the first time
-                MagVec = SQRT(DirectionX(PrevSurf)**2 + DirectionY(PrevSurf)**2 + DirectionZ(PrevSurf)**2)
-                InVecDirec(1) = - DirectionX(PrevSurf) / MagVec  !I is negative since the ray is incoming
-                InVecDirec(2) = - DirectionY(PrevSurf) / MagVec
-                InVecDirec(3) = - DirectionZ(PrevSurf) / MagVec
-            ELSE    !IF the ray is being rereflected
+            !IF (ReflecCount .EQ. 1) THEN  !If the ray is being reflected for the first time
+            !    MagVec = SQRT(DirectionX(PrevSurf)**2 + DirectionY(PrevSurf)**2 + DirectionZ(PrevSurf)**2)
+            !    InVecDirec(1) = - DirectionX(PrevSurf) / MagVec  !I is negative since the ray is incoming
+            !    InVecDirec(2) = - DirectionY(PrevSurf) / MagVec
+            !    InVecDirec(3) = - DirectionZ(PrevSurf) / MagVec
+            !ELSE    !IF the ray is being rereflected
                 InVecDirec(1) = - EmittedUV(PrevSurf, 1)
                 InVecDirec(2) = - EmittedUV(PrevSurf, 2)
                 InVecDirec(3) = - EmittedUV(PrevSurf, 3)
-            ENDIF
+            !END IF
 
             DotTheta = DOT_PRODUCT(InVecDirec, SurfNorm)   !Dot product of the incoming ray and surface normal
 
