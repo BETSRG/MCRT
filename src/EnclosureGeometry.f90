@@ -147,8 +147,8 @@ SUBROUTINE CalculateSurfaceEquation()
     IMPLICIT NONE
     INTEGER :: I, J, K, M, IOS
     INTEGER, DIMENSION (:) :: VS(4)
-    REAL(Prec2),  Dimension (4) :: X, Y, Z
-    REAL(Prec2), Dimension (:, :) :: V_x(SIndex, 2), V_y(SIndex, 2), V_z(SIndex, 2)
+    REAL(Prec2),  DIMENSION (4) :: X, Y, Z
+    REAL(Prec2), DIMENSION (:, :) :: V_x(SIndex, 2), V_y(SIndex, 2), V_z(SIndex, 2)
 
     !  V_x(SIndex, 2)   Vectors on a surface used for normal vector determination
     !  V_y(SIndex, 2)   Vectors on a surface used for normal vector determination
@@ -157,7 +157,7 @@ SUBROUTINE CalculateSurfaceEquation()
     !  Y               y  - coordinate of a vertix
     !  Z               z  - coordinate of a vertix
 
-    ALLOCATE (SPlane(NSurf), NormalV(NSurf, 3), Width(NSurf), Length(NSurf), Height(NSurf), NormalUV(NSurf, 3), PolygonIndex(NSurf), STAT = IOS)
+    ALLOCATE (SPlane(NSurf), NormalV(NSurf, 3), NormalUV(NSurf, 3), PolygonIndex(NSurf), STAT = IOS)
 
     !   Assign the vertices of a surfaces their corresponding vertices
     DO J = 1, 4
@@ -221,7 +221,7 @@ SUBROUTINE SurfaceNormal(Vx, Vy, Vz)
     IMPLICIT NONE
     INTEGER :: I, J, K
     REAL(Prec2) :: NV(SIndex), Vector(3) !Norm_V,
-    REAL(Prec2), Dimension (:, :) :: Vx(SIndex, 2), Vy(SIndex, 2), Vz(SIndex, 2)
+    REAL(Prec2), DIMENSION (:, :) :: Vx(SIndex, 2), Vy(SIndex, 2), Vz(SIndex, 2)
 
     ! Norm_V         Magnitude of a vector
     ! NV(SIndex)     Magnitude of a normal vector of a surface SIndex
@@ -237,9 +237,7 @@ SUBROUTINE SurfaceNormal(Vx, Vy, Vz)
         Vector(K) = NormalV(SIndex, K)
     END DO
 
-    ! JDS 11-8-06 attempt to eliminate Norm_V linking problem
-    ! NV(SIndex) = Norm_V(Vector)
-    NV(Sindex) = sqrt(DOT_PRODUCT(Vector, Vector))
+    NV(Sindex) = SQRT(DOT_PRODUCT(Vector, Vector))
 
     ! Converts/Normalizes the normal vector to get the unit vector
     DO J = 1, 3
@@ -285,7 +283,7 @@ SUBROUTINE CalculateAreaSurfaces()
         END DO
 
         DO I = 1, 2
-            LR(SIndex, I) = sqrt((X(I + 1) - X(I))**2 + (Y(I + 1) - Y(I))**2 + (Z(I + 1) - Z(I))**2)
+            LR(SIndex, I) = SQRT((X(I + 1) - X(I))**2 + (Y(I + 1) - Y(I))**2 + (Z(I + 1) - Z(I))**2)
         END DO
 
         Area(SIndex) = LR(SIndex, 1) * LR(SIndex, 2)
@@ -355,7 +353,6 @@ SUBROUTINE AllocateAndInitArrays()
     INTEGER :: I, J, IOS
 
     ALLOCATE(NAEnergy(NSurf, NSurf))
-    !ALLOCATE(TCOUNTA(NSurf), TCOUNTR(NSurf), TCOUNTRR(NSurf), NTOTAL(NSurf), STAT = IOS)
     ALLOCATE(TCOUNTA(NSurf), STAT = IOS)
     ALLOCATE(XLS(NSurf), YLS(NSurf), ZLS(NSurf), STAT = IOS)
     ALLOCATE(XP(NSurf, NSurf), YP(NSurf, NSurf), ZP(NSurf, NSurf), Intersection(NSurf, NSurf), STAT = IOS)
@@ -375,19 +372,7 @@ SUBROUTINE AllocateAndInitArrays()
     Yo = 0
     Zo = 0
     EmittedUv = 0
-    !ALLOCATE(TSpecA(NSurf), TSpecR(NSurf), TSpecRR(NSurf), NAEnergyS(NSurf, NSurf), NAEnergyR(NSurf, NSurf), NAEnergyWR(NSurf, NSurf))
 
-   !Setting Specular Counter arrays to 0
-    !DO I = 1, NSurf  !JH
-    !    TSpecA(I) = 0
-    !    TSpecR(I) = 0
-    !    TSpecRR(I) = 0
-    !    DO J = 1, NSurf
-    !        NAEnergyS(I, J) = 0
-    !        NAEnergyR(I, J) = 0
-    !        NAEnergyWR(I, J) = 0
-    !    END DO
-    !END DO
 END SUBROUTINE AllocateAndInitArrays
 
 END MODULE EnclosureGeometry

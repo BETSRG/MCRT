@@ -55,7 +55,7 @@ SUBROUTINE IntersectionPoints()
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(Prec2), DIMENSION(:) :: WV(3), UNV(3), EUV(3), W_V(3)
     REAL(Prec2) :: UNV_DOT_WV, UNV_DOT_EUV
-    REAL(Prec2),  Dimension (:) :: X(4), Y(4), Z(4)
+    REAL(Prec2),  DIMENSION (:) :: X(4), Y(4), Z(4)
 
     !    SI             Scalar multiplier of emitted energy unit vector to locate
     !                   the intersection point

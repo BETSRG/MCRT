@@ -18,15 +18,12 @@ SUBROUTINE RadDistributionFactors
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER :: I, J, K, L, IOS
+    INTEGER :: I, J, K, L, N_SCMB, IOS
     INTEGER, ALLOCATABLE, DIMENSION(:) :: NumEmitted
     INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergy_cmb
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: Area_cmb_temp, Emit_cmb_temp
+
     ALLOCATE(NumEmitted(NSurf), STAT = IOS)
-
-    !ALLOCATE(RAD_D_F(NSurf, NSurf), RAD_D_S(NSurf, NSurf), RAD_D_R(NSurf, NSurf), RAD_D_WR(NSurf, NSurf), STAT = IOS)
-    !ALLOCATE(NAEnergy_cmb(NSurf, NSurf), NAEnergyS_cmb(NSurf, NSurf), NAEnergyR_cmb(NSurf, NSurf), NAEnergyWR_cmb(NSurf, NSurf), STAT = IOS)
-
     ALLOCATE(RAD_D_F(NSurf, NSurf), STAT = IOS)
     ALLOCATE(NAEnergy_cmb(NSurf, NSurf), STAT = IOS)
     ALLOCATE(Area_cmb_temp(NSurf), Emit_cmb_temp(NSurf), STAT = IOS)
@@ -40,27 +37,6 @@ SUBROUTINE RadDistributionFactors
             ELSE
                 RAD_D_F(I, J) = REAL(NAEnergy(I, J)) / REAL(TCOUNTA(J))
             ENDIF
-
-            !! Specular rays
-            !IF (TSpecA(I) .EQ. 0) THEN
-            !    RAD_D_S(I, J) = 0
-            !ELSE
-            !    RAD_D_S(I, J) = REAL(NAEnergyS(I, J)) / REAL(TSpecA(I))
-            !ENDIF
-            !
-            !! Reflected specular rays
-            !IF ((TSpecR(I) + TSpecRR(I)) .EQ. 0) THEN
-            !    RAD_D_R(I, J) = 0
-            !ELSE
-            !    RAD_D_R(I, J) = REAL(NAEnergyR(I, J)) / (REAL(TSpecR(I)) + REAL(TSpecRR(I)))
-            !ENDIF
-            !
-            !! Non-Reflected (those absorbed at the first intersection point) specular rays
-            !IF ((TSpecA(I) - TSpecR(I)) .EQ. 0) THEN
-            !    RAD_D_WR(I, J) = 0
-            !ELSE
-            !    RAD_D_WR(I, J) = REAL(NAEnergyWR(I, J)) / (REAL(TSpecA(I)) - REAL(TSpecR(I)))
-            !ENDIF
         END DO
     END DO
 
@@ -84,15 +60,9 @@ SUBROUTINE RadDistributionFactors
 
     ! Copy over to arrays we can edit
     NAEnergy_cmb = NAEnergy
-    !NAEnergyS_cmb = NAEnergyS
-    !NAEnergyR_cmb = NAEnergyR
-    !NAEnergyWR_cmb = NAEnergyWR
 
     ! Initialize arrays
     RAD_D_F_cmb = 0
-    !RAD_D_S_cmb = 0
-    !RAD_D_R_cmb = 0
-    !RAD_D_WR_cmb = 0
 
     ! Combine count
     DO I = 1, NSurf
@@ -117,18 +87,6 @@ SUBROUTINE RadDistributionFactors
                 ! Diffuse rays
                 NAEnergy_cmb(I, CMB(J)) = NAEnergy_cmb(I, CMB(J)) + NAEnergy_cmb(I, J)
                 NAEnergy_cmb(I, J) = 0
-
-                !! Specular rays
-                !NAEnergyS_cmb(I, CMB(J)) = NAEnergyS_cmb(I, CMB(J)) + NAEnergyS_cmb(I, J)
-                !NAEnergyS_cmb(I, J) = 0
-                !
-                !! Reflected specular rays
-                !NAEnergyR_cmb(I, CMB(J)) = NAEnergyR_cmb(I, CMB(J)) + NAEnergyR_cmb(I, J)
-                !NAEnergyR_cmb(I, J) = 0
-                !
-                !! Non-Reflected (those absorbed at the first intersection point) specular rays
-                !NAEnergyWR_cmb(I, CMB(J)) = NAEnergyWR_cmb(I, CMB(J)) + NAEnergyWR_cmb(I, J)
-                !NAEnergyWR_cmb(I, J) = 0
             ENDIF
         END DO
     END DO
@@ -140,18 +98,6 @@ SUBROUTINE RadDistributionFactors
                 ! Diffuse rays
                 NAEnergy_cmb(CMB(I), J) = NAEnergy_cmb(CMB(I), J) + NAEnergy_cmb(I, J)
                 NAEnergy_cmb(I, J) = 0
-
-                !! Specular rays
-                !NAEnergyS_cmb(CMB(I), J) = NAEnergyS_cmb(CMB(I), J) + NAEnergyS_cmb(I, J)
-                !NAEnergyS_cmb(I, J) = 0
-                !
-                !! Reflected specular rays
-                !NAEnergyR_cmb(CMB(I), J) = NAEnergyR_cmb(CMB(I), J) + NAEnergyR_cmb(I, J)
-                !NAEnergyR_cmb(I, J) = 0
-                !
-                !! Non-Reflected (those absorbed at the first intersection point) specular rays
-                !NAEnergyWR_cmb(CMB(I), J) = NAEnergyWR_cmb(CMB(I), J) + NAEnergyWR_cmb(I, J)
-                !NAEnergyWR_cmb(I, J) = 0
             ENDIF
         END DO
     END DO
@@ -176,27 +122,6 @@ SUBROUTINE RadDistributionFactors
                     ELSE
                         RAD_D_F_cmb(K, L) = REAL(NAEnergy_cmb(I, J)) / REAL(NumEmitted(I))
                     END IF
-
-                    !! Specular rays
-                    !IF (TSpecA(I) == 0) THEN
-                    !    RAD_D_S_cmb(K, L) = 0
-                    !ELSE
-                    !    RAD_D_S_cmb(K, L) = REAL(NAEnergyS_cmb(I, J)) / REAL(TSpecA(I))
-                    !END IF
-                    !
-                    !! Reflected specular rays
-                    !IF ((TSpecR(I) + TSpecRR(I)) == 0) THEN
-                    !    RAD_D_R_cmb(K, L) = 0
-                    !ELSE
-                    !    RAD_D_R_cmb(K, L) = REAL(NAEnergyR_cmb(I, J)) / (REAL(TSpecR(I)) + REAL(TSpecRR(I)))
-                    !END IF
-                    !
-                    !! Non-Reflected (those absorbed at the first intersection point) specular rays
-                    !IF ((TSpecA(I) - TSpecR(I)) == 0) THEN
-                    !    RAD_D_WR_cmb(K, L) = 0
-                    !ELSE
-                    !    RAD_D_WR_cmb(K, L) = REAL(NAEnergyWR_cmb(I, J)) / (REAL(TSpecA(I)) - REAL(TSpecR(I)))
-                    !END IF
                 END IF
             END DO
         END IF

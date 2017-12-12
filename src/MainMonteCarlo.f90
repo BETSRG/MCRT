@@ -1,7 +1,8 @@
 PROGRAM MainMonteCarlo
-    !Program and Modules created by Bereket Nigusse, Fall 2004 for MAE 5823
-    !Program and Modules updated and modified November 2012 by
-    !John Holman, Rachel Spitler, and Sudha Sikha for MAE 5823
+    ! Program and Modules created by Bereket Nigusse, Fall 2004 for MAE 5823
+    ! Program and Modules updated and modified November 2012 by
+    ! John Holman, Rachel Spitler, and Sudha Sikha for MAE 5823
+    ! Matt Mitchell for MAE 5823, December 2017
 
     USE Global
     USE EnclosureGeometry
@@ -21,11 +22,8 @@ PROGRAM MainMonteCarlo
     OPEN(Unit = 2, file = 'input.vs3', status = 'unknown', Action = 'READ', IOSTAT = IOS)
     OPEN(Unit = 3, file = 'MCoutput.txt', status = 'unknown', IOSTAT = IOS)     ! Diffuse bundles and distribution factors
     OPEN(Unit = 4, file = 'logfile.dat', status = 'unknown', IOSTAT = IOS)      ! Ray emission, reflection, and absorption points
-    !OPEN(Unit = 6, File = 'SpecularDF.out', status = 'unknown', IOSTAT = IOS)   ! Total Specular bundles and distribution factors
     OPEN(Unit = 7, File = 'input.TK', status = 'unknown', IOSTAT = IOS)         ! Surface temperatures
     OPEN(Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)       ! Geometry and ray data for RTVT
-    !OPEN(Unit = 9, File = 'SpecReflecDF.out', status = 'unknown', IOSTAT = IOS) ! Reflected and rereflected Specular bundles and distribution factors
-    !OPEN(Unit = 10, File = 'SpecWRDF.out', status = 'unknown', IOSTAT = IOS)    ! Non-Reflected AKA absorbed on first intersection Specular bundles and distribution factors
     OPEN(Unit = 12, File = 'MCOutput.csv', status = 'unknown', IOSTAT = IOS)     ! csv file with diffuse distribution factors
 
     ! Read simulation parameters
@@ -94,30 +92,26 @@ PROGRAM MainMonteCarlo
 
     END DO
 
-    !  Calculate the radiation distribution factor
+    ! Calculate the radiation distribution factor
     WRITE(*, *) "Calculating Distribution Factors"
     CALL RadDistributionFactors()
 
-    !  Calculate the heat balance of the enclosure
+    ! Calculate the heat balance of the enclosure
     WRITE(*, *) "Evaluating Radiation Balance"
     CALL RadiationBalance()
 
     WRITE(*, *) "Simulaton Complete"
 
-    !  Calculate the CPU Time
+    ! Calculate the CPU Time
     CALL CPU_TIME(TIME2)
 
-    !  WRITE Results to a file
+    ! Write Results to a file
     CALL PrintViewFactorHeatFlux
 
     CLOSE(UNIT = 2)
     CLOSE(Unit = 3)
     CLOSE(Unit = 4)
-    !CLOSE(Unit = 6)
     CLOSE(Unit = 7)
-    !CLOSE(Unit = 9)
-    !CLOSE(Unit = 10)
-    !CLOSE(Unit = 11)
     CLOSE(Unit = 12)
     STOP
 END PROGRAM MainMonteCarlo
