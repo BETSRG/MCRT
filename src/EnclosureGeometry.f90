@@ -21,7 +21,7 @@ SUBROUTINE CalculateGeometry()
     IMPLICIT NONE
     INTEGER :: I, VertIndex, SurfIndex, TypeIndex, IOS
     CHARACTER (Len = 12) :: ReadStr
-    REAL(prec2) TotalReflec
+    REAL(Prec2) TotalReflec
 
     NVertex = 0
     NSurf = 0
@@ -260,8 +260,8 @@ SUBROUTINE CalculateAreaSurfaces()
     INTEGER :: I, J, IOS
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(Prec2), DIMENSION(:) :: X(4), Y(4), Z(4)
-    REAL(prec2), ALLOCATABLE, DIMENSION(:, :) :: LR, LT
-    REAL(prec2), ALLOCATABLE, DIMENSION(:) :: S
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:, :) :: LR, LT
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: S
 
     !   LR            Length and width of a rectangular surface in the enclosure
     !   LT            The three sides of a triangular surface in the enclosure

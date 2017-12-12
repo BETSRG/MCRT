@@ -134,7 +134,8 @@ SUBROUTINE SingleOutIntersection()
     INTEGER :: I, J, K, Index, Scount, IOS, InterCount
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: SIINTER
-    REAL(prec2) SIMIN, SIMAX
+    REAL(Prec2) SIMIN, SIMAX
+    REAL(Prec2) XPVal
 
     !   SIMIN        the closest intersection distance
     !   SIMAX        Maximum real number
@@ -146,12 +147,13 @@ SUBROUTINE SingleOutIntersection()
 
     !  Calculates the vector position of the intersection point
     DO Index = 1, NSurf
-        IF(Index .ne. SIndex)THEN
-            XP(SIndex, Index) = XLS(SIndex) + SI(Index) * EmittedUV(SIndex, 1)
+        IF (Index .ne. SIndex) THEN
+            XPVal = XLS(SIndex) + SI(Index) * EmittedUV(SIndex, 1)
+            XP(SIndex, Index) = XPVal
             YP(SIndex, Index) = YLS(SIndex) + SI(Index) * EmittedUV(SIndex, 2)
             ZP(SIndex, Index) = ZLS(SIndex) + SI(Index) * EmittedUV(SIndex, 3)
 !
-            IF(SI(Index) > 0.0)THEN
+            IF (SI(Index) > 0.0) THEN
                 Intersection(SIndex, Index) = 1  !0 means no intersection, 1 means there is Inter.
             ELSE
                 Intersection(SIndex, Index) = 0

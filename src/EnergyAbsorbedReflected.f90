@@ -18,8 +18,9 @@ SUBROUTINE AbsorptionReflection()
 !
 !******************************************************************************
     IMPLICIT NONE
-    INTEGER      :: I, J, K, IOS, count
-    REAL(Prec2)  :: R_incident
+    INTEGER     :: I, J, K, IOS, count
+    REAL(Prec2) :: R_incident
+    REAL(Prec2) :: XPVal
 
     !   R_absorbed      Random number generated is used to verify whether the
     !                   intercepted energy is absorbed or reflected by comparing
@@ -58,10 +59,11 @@ SUBROUTINE AbsorptionReflection()
     IF (WriteLogFile) THEN
         IF (RayAbsorbed) THEN
 111         FORMAT(1(' ', I2, 3(' ', f6.3)), ' ' '0')
-            WRITE(4, 111, ADVANCE = 'YES')SInter, XP(SIndex, SInter), YP(SIndex, SInter), ZP(SIndex, SInter)
+            XPVal = XP(SIndex, SInter)
+            WRITE(4, 111, ADVANCE = 'YES') SInter, XPVal, YP(SIndex, SInter), ZP(SIndex, SInter)
         ELSE
 121         FORMAT(1(' ', I2, 3(' ', f6.3)))
-            WRITE(4, 121, ADVANCE = 'NO')SInter, XP(SIndex, SInter), YP(SIndex, SInter), ZP(SIndex, SInter)
+            WRITE(4, 121, ADVANCE = 'NO') SInter, XP(SIndex, SInter), YP(SIndex, SInter), ZP(SIndex, SInter)
         END IF
     ENDIF
 

@@ -21,7 +21,7 @@ SUBROUTINE RadDistributionFactors
     INTEGER :: I, J, K, L, IOS
     INTEGER, ALLOCATABLE, DIMENSION(:) :: NumEmitted
     INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergy_cmb
-    REAL(prec2), ALLOCATABLE, DIMENSION(:) :: Area_cmb_temp, Emit_cmb_temp
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: Area_cmb_temp, Emit_cmb_temp
     ALLOCATE(NumEmitted(NSurf), STAT = IOS)
 
     !ALLOCATE(RAD_D_F(NSurf, NSurf), RAD_D_S(NSurf, NSurf), RAD_D_R(NSurf, NSurf), RAD_D_WR(NSurf, NSurf), STAT = IOS)

@@ -106,7 +106,7 @@ SUBROUTINE RectangularSurface()
     IMPLICIT NONE
     INTEGER :: J
     INTEGER, DIMENSION (:) :: VS(4)
-    REAL(prec2), ALLOCATABLE, DIMENSION(:) :: SurfaceE
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: SurfaceE
     REAL(Prec2), DIMENSION(4) :: X, Y, Z
     REAL(Prec2), DIMENSION(:, :) :: Vedge1(3), Vedge2(3), Vedge3(3) ! Dividing the rectangles into triangles
     REAL(Prec2) :: Randu, Randv
@@ -172,7 +172,8 @@ SUBROUTINE InitializeSeed()
 
     CALL SYSTEM_CLOCK(COUNT = clock)
 
-    seed = clock + 104729 * (/ (i - 1, i = 1, n) /)
+    !seed = clock + 104729 * (/ (i - 1, i = 1, n) /)
+    seed = 39 * (/ (i - 1, i = 1, n) /)
     CALL RANDOM_SEED(PUT = seed)
 
     DEALLOCATE(seed)
