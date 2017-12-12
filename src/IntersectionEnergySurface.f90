@@ -40,7 +40,6 @@ SUBROUTINE CheckingIntersection()
 
 END SUBROUTINE CheckingIntersection
 
-
 SUBROUTINE IntersectionPoints()
 !****************************************************************************
 !
@@ -111,9 +110,9 @@ SUBROUTINE IntersectionPoints()
         SI(Index) = 0.0
     ENDIF
         DO I = 1, 3
-        UNV(I) = 0.0
-        W_V(I) = 0.0
-        EUV(I) = 0.0
+            UNV(I) = 0.0
+            W_V(I) = 0.0
+            EUV(I) = 0.0
         END DO
     END DO
 

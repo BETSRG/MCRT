@@ -54,7 +54,7 @@ SUBROUTINE RadiationBalance
             EBSUM = EBSUM + RAD_D_F(I, J) * EB(J)
         END DO
 
-        QFLUX(I) = EMIT(I) * EB(I) - EMIT(I) * EBSUM
+        QFLUX(I) = Emit(I) * EB(I) - Emit(I) * EBSUM
         Q(I) = Area(I) * QFlux(I)
     END DO
 

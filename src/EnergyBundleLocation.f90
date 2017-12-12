@@ -231,7 +231,7 @@ SUBROUTINE TangentVectors()
 
     ! JDS 11-8-06 attempt to eliminate linking problem with Norm_V
     ! NV = Norm_V(TUV1)
-    NV = sqrt(DOT_PRODUCT(TUV1, TUV1))
+    NV = SQRT(DOT_PRODUCT(TUV1, TUV1))
 
     DO J = 1, 3
         TUV1(J) = TUV1(J) / NV
@@ -268,27 +268,41 @@ SUBROUTINE DirectionEmittedEnergy()
     REAL(Prec2), DIMENSION(4) :: X, Y, Z
 
     !  Calculate emitted energy bundle direction angles
-    Pi = 4. * Atan(1.)
-    Theta = asin(sqrt(Rand(4)))
+    Pi = 4. * ATAN(1.)
+    Theta = ASIN(SQRT(Rand(4)))
     Phi   = 2. * Pi * Rand(5)
-    ALLOCATE (EmittedUV(NSurf, 3), STAT = IOS )
-    ! Calculate the unit vector in the direction of the emitted energy bundle
-    IF (Spindex .eq. 1) THEN    !RS: For Specular Rays
-        IF (Reflected) THEN !RS: If the rays are being reflected off of another surface
+
+    IF (.not. Reflected) THEN
+        ! Emitted rays
+        IF ((REAL(BIndex) / REAL(NBundles)) < FracSpecEmit(SIndex)) THEN
+            ! Emit Specularly
+            EmittedUV(SIndex, 1) = DirectionX(SIndex)
+            EmittedUV(SIndex, 2) = DirectionY(SIndex)
+            EmittedUV(Sindex, 3) = DirectionZ(SIndex)
+        ELSE
+            ! Emit Diffusely
+            EmittedUV(SIndex, 1) = NormalUV(SIndex, 1) * cos(Theta) + Tan_V1(SIndex, 1) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 1) * sin(Theta) * sin(Phi)
+            EmittedUV(SIndex, 2) = NormalUV(SIndex, 2) * cos(Theta) + Tan_V1(SIndex, 2) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 2) * sin(Theta) * sin(Phi)
+            EmittedUV(SIndex, 3) = NormalUV(SIndex, 3) * cos(Theta) + Tan_V1(SIndex, 3) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 3) * sin(Theta) * sin(Phi)
+        END IF
+    ELSE
+        ! Reflected rays
+        IF (ReflectedSpec) THEN
+            ! Specularly reflected rays
             SurfNorm(1) = NormalUV(SIndex, 1)  !Surface normal unit vector
             SurfNorm(2) = NormalUV(SIndex, 2)
             SurfNorm(3) = NormalUV(SIndex, 3)
 
             !Taking the incoming direction from the specified emission direction
-            IF (TCountSpecR .EQ. 1) THEN  !If the ray is being reflected for the first time
-                MagVec = SQRT(DirectionX(OldSurface)**2 + DirectionY(OldSurface)**2 + DirectionZ(OldSurface)**2)
-                InVecDirec(1) = - DirectionX(OldSurface) / MagVec  !I is negative since the ray is incoming
-                InVecDirec(2) = - DirectionY(OldSurface) / MagVec
-                InVecDirec(3) = - DirectionZ(OldSurface) / MagVec
+            IF (ReflecCount .EQ. 1) THEN  !If the ray is being reflected for the first time
+                MagVec = SQRT(DirectionX(PrevSurf)**2 + DirectionY(PrevSurf)**2 + DirectionZ(PrevSurf)**2)
+                InVecDirec(1) = - DirectionX(PrevSurf) / MagVec  !I is negative since the ray is incoming
+                InVecDirec(2) = - DirectionY(PrevSurf) / MagVec
+                InVecDirec(3) = - DirectionZ(PrevSurf) / MagVec
             ELSE    !IF the ray is being rereflected
-                InVecDirec(1) = - EmittedUV(OldSurface, 1)
-                InVecDirec(2) = - EmittedUV(OldSurface, 2)
-                InVecDirec(3) = - EmittedUV(OldSurface, 3)
+                InVecDirec(1) = - EmittedUV(PrevSurf, 1)
+                InVecDirec(2) = - EmittedUV(PrevSurf, 2)
+                InVecDirec(3) = - EmittedUV(PrevSurf, 3)
             ENDIF
 
             DotTheta = DOT_PRODUCT(InVecDirec, SurfNorm)   !Dot product of the incoming ray and surface normal
@@ -298,20 +312,55 @@ SUBROUTINE DirectionEmittedEnergy()
             EmittedUV(SIndex, 1) = 2 * DotTheta * SurfNorm(1) - InVecDirec(1)
             EmittedUV(SIndex, 2) = 2 * DotTheta * SurfNorm(2) - InVecDirec(2)
             EmittedUV(SIndex, 3) = 2 * DotTheta * SurfNorm(3) - InVecDirec(3)
+        ELSE
+            ! Diffusely reflected rays
+            EmittedUV(SIndex, 1) = NormalUV(SIndex, 1) * cos(Theta) + Tan_V1(SIndex, 1) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 1) * sin(Theta) * sin(Phi)
+            EmittedUV(SIndex, 2) = NormalUV(SIndex, 2) * cos(Theta) + Tan_V1(SIndex, 2) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 2) * sin(Theta) * sin(Phi)
+            EmittedUV(SIndex, 3) = NormalUV(SIndex, 3) * cos(Theta) + Tan_V1(SIndex, 3) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 3) * sin(Theta) * sin(Phi)
+        END IF
 
-        ELSE    !IF Not Reflected
-            EmittedUV(SIndex, 1) = DirectionX(SIndex)
-            EmittedUV(SIndex, 2) = DirectionY(SIndex)
-            EmittedUV(Sindex, 3) = DirectionZ(SIndex)
-        ENDIF
+    END IF
 
-        CALL CheckDirection()
-
-    ELSE
-        EmittedUV(SIndex, 1) = NormalUV(SIndex, 1) * cos(Theta) + Tan_V1(SIndex, 1) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 1) * sin(Theta) * sin(Phi)
-        EmittedUV(SIndex, 2) = NormalUV(SIndex, 2) * cos(Theta) + Tan_V1(SIndex, 2) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 2) * sin(Theta) * sin(Phi)
-        EmittedUV(SIndex, 3) = NormalUV(SIndex, 3) * cos(Theta) + Tan_V1(SIndex, 3) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 3) * sin(Theta) * sin(Phi)
-    ENDIF
+    !! Calculate the unit vector in the direction of the emitted energy bundle
+    !IF (Spindex .eq. 1) THEN    !RS: For Specular Rays
+    !    IF (Reflected) THEN !RS: If the rays are being reflected off of another surface
+    !        SurfNorm(1) = NormalUV(SIndex, 1)  !Surface normal unit vector
+    !        SurfNorm(2) = NormalUV(SIndex, 2)
+    !        SurfNorm(3) = NormalUV(SIndex, 3)
+    !
+    !        !Taking the incoming direction from the specified emission direction
+    !        IF (TCountSpecR .EQ. 1) THEN  !If the ray is being reflected for the first time
+    !            MagVec = SQRT(DirectionX(OldSurface)**2 + DirectionY(OldSurface)**2 + DirectionZ(OldSurface)**2)
+    !            InVecDirec(1) = - DirectionX(OldSurface) / MagVec  !I is negative since the ray is incoming
+    !            InVecDirec(2) = - DirectionY(OldSurface) / MagVec
+    !            InVecDirec(3) = - DirectionZ(OldSurface) / MagVec
+    !        ELSE    !IF the ray is being rereflected
+    !            InVecDirec(1) = - EmittedUV(OldSurface, 1)
+    !            InVecDirec(2) = - EmittedUV(OldSurface, 2)
+    !            InVecDirec(3) = - EmittedUV(OldSurface, 3)
+    !        ENDIF
+    !
+    !        DotTheta = DOT_PRODUCT(InVecDirec, SurfNorm)   !Dot product of the incoming ray and surface normal
+    !
+    !        !r = 2(I dot n)n - I   !Page 5, Nancy Pollard, 2004, http://graphics.cs.cmu.edu/nsp/course/15 - 462/Spring04/slides/13 - ray.pdf
+    !
+    !        EmittedUV(SIndex, 1) = 2 * DotTheta * SurfNorm(1) - InVecDirec(1)
+    !        EmittedUV(SIndex, 2) = 2 * DotTheta * SurfNorm(2) - InVecDirec(2)
+    !        EmittedUV(SIndex, 3) = 2 * DotTheta * SurfNorm(3) - InVecDirec(3)
+    !
+    !    ELSE    !IF Not Reflected
+    !        EmittedUV(SIndex, 1) = DirectionX(SIndex)
+    !        EmittedUV(SIndex, 2) = DirectionY(SIndex)
+    !        EmittedUV(Sindex, 3) = DirectionZ(SIndex)
+    !    ENDIF
+    !
+    !    CALL CheckDirection()
+    !
+    !ELSE
+    !    EmittedUV(SIndex, 1) = NormalUV(SIndex, 1) * cos(Theta) + Tan_V1(SIndex, 1) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 1) * sin(Theta) * sin(Phi)
+    !    EmittedUV(SIndex, 2) = NormalUV(SIndex, 2) * cos(Theta) + Tan_V1(SIndex, 2) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 2) * sin(Theta) * sin(Phi)
+    !    EmittedUV(SIndex, 3) = NormalUV(SIndex, 3) * cos(Theta) + Tan_V1(SIndex, 3) * sin(Theta) * cos(Phi) + Tan_V2(SIndex, 3) * sin(Theta) * sin(Phi)
+    !ENDIF
 END SUBROUTINE  DirectionEmittedEnergy
 
 SUBROUTINE CheckDirection()

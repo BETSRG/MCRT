@@ -21,14 +21,12 @@ PROGRAM MainMonteCarlo
     OPEN(Unit = 2, file = 'input.vs3', status = 'unknown', Action = 'READ', IOSTAT = IOS)
     OPEN(Unit = 3, file = 'MCoutput.txt', status = 'unknown', IOSTAT = IOS)     ! Diffuse bundles and distribution factors
     OPEN(Unit = 4, file = 'logfile.dat', status = 'unknown', IOSTAT = IOS)      ! Ray emission, reflection, and absorption points
-    OPEN(Unit = 6, File = 'SpecularDF.out', status = 'unknown', IOSTAT = IOS)   ! Total Specular bundles and distribution factors
+    !OPEN(Unit = 6, File = 'SpecularDF.out', status = 'unknown', IOSTAT = IOS)   ! Total Specular bundles and distribution factors
     OPEN(Unit = 7, File = 'input.TK', status = 'unknown', IOSTAT = IOS)         ! Surface temperatures
     OPEN(Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)       ! Geometry and ray data for RTVT
-    OPEN(Unit = 9, File = 'SpecReflecDF.out', status = 'unknown', IOSTAT = IOS) ! Reflected and rereflected Specular bundles and distribution factors
-    OPEN(Unit = 10, File = 'SpecWRDF.out', status = 'unknown', IOSTAT = IOS)    ! Non-Reflected AKA absorbed on first intersection Specular bundles and distribution factors
-    OPEN(Unit = 11, File = 'DebugFile.txt', status = 'unknown', IOSTAT = IOS)   ! Lists rays that are not finding intersection points and whether they're reflected or not
-
-    OPEN(Unit = 12, File = 'diffuse.csv', status = 'unknown', IOSTAT = IOS)     ! csv file with diffuse distribution factors
+    !OPEN(Unit = 9, File = 'SpecReflecDF.out', status = 'unknown', IOSTAT = IOS) ! Reflected and rereflected Specular bundles and distribution factors
+    !OPEN(Unit = 10, File = 'SpecWRDF.out', status = 'unknown', IOSTAT = IOS)    ! Non-Reflected AKA absorbed on first intersection Specular bundles and distribution factors
+    OPEN(Unit = 12, File = 'MCOutput.csv', status = 'unknown', IOSTAT = IOS)     ! csv file with diffuse distribution factors
 
     ! Read simulation parameters
     READ(8, *) NBundles
@@ -46,8 +44,7 @@ PROGRAM MainMonteCarlo
 
     WRITE(*, *) "Initializing Variables"
     CALL InitializeSeed()
-    CALL AllocateArrays()
-    CALL InitializeArrays()
+    CALL AllocateAndInitArrays()
 
     WRITE(*, *) "Calculating Surface Areas"
     DO SIndex = 1, NSurf
@@ -56,89 +53,44 @@ PROGRAM MainMonteCarlo
         CALL TangentVectors()
     END DO
 
-    ! Initialize the logical variable for the first emitted energy bundle
-    Reflected = .False.
-
     WRITE(*, *) "Evaluating Surface Energy Bundles"
 
-    DO SIndexR = 1, NSurf
+    DO SIndexRef = 1, NSurf
 
-        SIndex  = SIndexR
+        ! This surface only reflects, so we don't need to compute emitted values
+        IF (SType(SIndexRef) == "SDRO" ) THEN
+            CYCLE
+        ELSE
 
-        !  The counter only counts the emitted and absorbed energy
-        Ntrials = 0
-        IF (SType(SIndex) .EQ. 'SDE') THEN
+            ! Run for all bundles
+            DO BIndex = 1, NBundles
+                SIndex = SIndexRef
+                Reflected = .False.
+                RayAbsorbed = .false.
+                ReflecCount = 0
+                ! Run until absorbed
+                DO
+                    !  Calculating source locations for each energy bundle
+                    CALL EnergySourceLocation()
 
-            SpIndex = 1 !JH: This begins the Specular ray tracing
+                    !  Calculate the direction of the emitted energy bundle
+                    CALL DirectionEmittedEnergy()
 
-            Specular:    DO
-                !  Calculating source locations for each energy bundle
-                CALL EnergySourceLocation()
+                    ! Check the intersection points and determine the correct one
+                    CALL CheckingIntersection()
 
-                !  Calculate the direction of the emitted energy bundle
-                CALL DirectionEmittedEnergy()
+                    ! Determine whether the energy bundle is absorbed or reflected
+                    CALL AbsorptionReflection()
 
-                ! Check the intersection points and determine the correct one
-                CALL CheckingIntersection()
-
-                ! Determine whether the energy bundle is absorbed or reflected
-                CALL AbsorptionReflection()
-
-                ! IF the number of absorbed energy bundles is the same as the number
-                ! of emitted energy bundles, exit the specular emission loop
-
-                IF(NTrials == NBundles) EXIT Specular
-            END DO Specular
-
-            SpIndex = 0 !JH: This begins the diffuse ray tracing for SDE surfaces
-
-            Ntrialsd = 0
-            Diffuse1:    DO
-                !  Calculating source locations for each energy bundle
-                CALL EnergySourceLocation()
-
-                !  Calculate the direction of emitted energy bundle
-                CALL DirectionEmittedEnergy()
-
-                !  Check the intersection points and determine the correct one
-                CALL CheckingIntersection()
-
-                !  Determine whether the energy bundle is absorbed or reflected
-                CALL AbsorptionReflection()
-
-                !  IF the number of absorbed energy bundles is the same as the
-                !  number of emitted energy bundles, exit the diffuse emission loop
-
-                IF(NTrialsd == NBundles) EXIT Diffuse1
-            END DO Diffuse1
-
-        ELSEIF (SType(SIndex) .EQ. "DIF" .OR. SType(SIndex) .EQ. "SDR") THEN
-            NTrialsd = 0
-
-            !  JH: This is the standard diffuse ray tracing
-            Diffuse2:    DO
-
-                !  Calculating source locations for each energy bundle
-                CALL EnergySourceLocation()
-
-                !  Calculate the direction of emitted energy bundle
-                CALL DirectionEmittedEnergy()
-
-                !  Check the intersection points and determine the correct one
-                CALL CheckingIntersection()
-
-                !  Determine whether the energy bundle is absorbed or reflected
-                CALL AbsorptionReflection()
-
-                !  IF the number of absorbed energy bundles is the same as the
-                !  number of emitted energy bundles, exit the diffuse emission loop
-
-                IF(NTrialsd == NBundles) EXIT Diffuse2
-            END DO Diffuse2
-        ENDIF
+                    IF (RayAbsorbed) THEN
+                        EXIT
+                    END IF
+                END DO
+            END DO
+        END IF
 
         ! Update progress bar
-        CALL Progress(SIndexR, NSurf)
+        CALL Progress(SIndex, NSurf)
 
     END DO
 
@@ -161,11 +113,11 @@ PROGRAM MainMonteCarlo
     CLOSE(UNIT = 2)
     CLOSE(Unit = 3)
     CLOSE(Unit = 4)
-    CLOSE(Unit = 6)
+    !CLOSE(Unit = 6)
     CLOSE(Unit = 7)
-    CLOSE(Unit = 9)
-    CLOSE(Unit = 10)
-    CLOSE(Unit = 11)
+    !CLOSE(Unit = 9)
+    !CLOSE(Unit = 10)
+    !CLOSE(Unit = 11)
     CLOSE(Unit = 12)
     STOP
 END PROGRAM MainMonteCarlo

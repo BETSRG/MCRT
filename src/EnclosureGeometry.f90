@@ -21,6 +21,7 @@ SUBROUTINE CalculateGeometry()
     IMPLICIT NONE
     INTEGER :: I, VertIndex, SurfIndex, TypeIndex, IOS
     CHARACTER (Len = 12) :: ReadStr
+    REAL(prec2) TotalReflec
 
     NVertex = 0
     NSurf = 0
@@ -44,8 +45,17 @@ SUBROUTINE CalculateGeometry()
 
     !  Allocate the size of the array
     ALLOCATE(V(NVertex), XS(NVertex), YS(NVertex), ZS(NVertex), STAT = IOS)
-    ALLOCATE(SNumber(NSurf), SVertex(NSurf, NSurf), SType(NSurf), BASEP(NSurf), CMB(NSurf), EMIT(NSurf), SURF_NAME(NSurf), STAT = IOS)
-    ALLOCATE(DirectionX(NSurf), DirectionY(NSurf), DirectionZ(NSurf), SpecReflec(NSurf), DiffReflec(NSurf))
+    ALLOCATE(SNumber(NSurf), SVertex(NSurf, NSurf), SType(NSurf), BaseP(NSurf), CMB(NSurf), Emit(NSurf), SurfName(NSurf), STAT = IOS)
+    ALLOCATE(DirectionX(NSurf), DirectionY(NSurf), DirectionZ(NSurf), SpecReflec(NSurf), DiffReflec(NSurf), FracSpecEmit(NSurf), FracSpecReflec(NSurf))
+
+    ! Initialize arrays
+    DirectionX = 0
+    DirectionY = 0
+    DirectionZ = 0
+    SpecReflec = 0
+    DiffReflec = 0
+    FracSpecEmit = 0
+    FracSpecReflec = 0
 
 201 FORMAT(A1, ' ', I2, 3(' ', f6.3))
 203 FORMAT(A1, 5('  ', I2), 1('  ',f6.3), 1('  ',I2), 1('  ',f6.3), A15)
@@ -60,6 +70,8 @@ SUBROUTINE CalculateGeometry()
             BACKSPACE(2)
             READ (2, *) ReadStr, VertIndex, XS(VertIndex), YS(VertIndex), ZS(VertIndex)
             V(VertIndex) = VertIndex
+
+            ! Write vertex data for RTVT
             IF (WriteLogFile) THEN
                 WRITE(4, 201, ADVANCE = 'YES') TRIM(ReadStr), VertIndex, XS(VertIndex), YS(VertIndex), ZS(VertIndex)
             END IF
@@ -68,14 +80,13 @@ SUBROUTINE CalculateGeometry()
 
             ! Read in surface information
             BACKSPACE(2)
-            READ (2, *) ReadStr, SurfIndex, (SVertex(SurfIndex, I), I = 1, 4), BASEP(SurfIndex), CMB(SurfIndex), EMIT(SurfIndex), SURF_NAME(SurfIndex)
+            READ (2, *) ReadStr, SurfIndex, (SVertex(SurfIndex, I), I = 1, 4), BaseP(SurfIndex), CMB(SurfIndex), Emit(SurfIndex), SurfName(SurfIndex)
             SNumber(SurfIndex) = SurfIndex
-            IF (WriteLogFile) THEN
-                WRITE(4, 203) TRIM(ReadStr), SurfIndex, (SVertex(SurfIndex, I), I = 1, 4), BASEP(SurfIndex), CMB(SurfIndex), EMIT(SurfIndex), SURF_NAME(SurfIndex)
-            END IF
 
-            SpecReflec(SurfIndex) = 1 - EMIT(SurfIndex)
-            DiffReflec(SurfIndex) = 1 - EMIT(SurfIndex)
+            ! Write surface data for RTVT
+            IF (WriteLogFile) THEN
+                WRITE(4, 203) TRIM(ReadStr), SurfIndex, (SVertex(SurfIndex, I), I = 1, 4), BaseP(SurfIndex), CMB(SurfIndex), Emit(SurfIndex), SurfName(SurfIndex)
+            END IF
 
         ELSE IF (StrLowCase(TRIM(ReadStr)) == "t") THEN
 
@@ -84,13 +95,9 @@ SUBROUTINE CalculateGeometry()
             READ(2, *) ReadStr, TypeIndex, SType(TypeIndex)
             BACKSPACE(2)
             IF (SType(TypeIndex) == "SDE") THEN
-                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), DirectionX(TypeIndex), DirectionY(TypeIndex), DirectionZ(TypeIndex) ! Reading in the direction vector
-            ELSE IF (SType(TypeIndex) == "SDR") THEN
-                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), SpecReflec(TypeIndex), DiffReflec(TypeIndex) ! Reading in specular and diffuse reflection
-            ELSE IF (SType(TypeIndex) == "DRO") THEN
-                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex)
-            ELSE IF (SType(TypeIndex) == "SRO") THEN
-                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), SpecReflec(TypeIndex), DiffReflec(TypeIndex) ! Reading in specular and diffuse reflection
+                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), DirectionX(TypeIndex), DirectionY(TypeIndex), DirectionZ(TypeIndex), FracSpecEmit(TypeIndex), FracSpecReflec(TypeIndex)
+            ELSE IF (SType(TypeIndex) == "SDRO") THEN
+                READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), FracSpecReflec(TypeIndex) ! Reading in specular and diffuse reflection
             ELSE
                 READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex)
             END IF
@@ -102,11 +109,19 @@ SUBROUTINE CalculateGeometry()
     END DO
 
     ! If no surface types were provided, set them to DIF here
+    ! Update reflectance/emittance values and fractions here
     DO I = 1, NSurf
-        IF ((SType(I) == "SDE") .or. (SType(I) == "SDR") .or. (SType(I) == "DRO") .or. (SType(I) == "SRO")) THEN
-            CYCLE
+        IF (SType(I) == "SDE") THEN
+            TotalReflec = 1 - Emit(I)
+            DiffReflec(I) = TotalReflec * (1 - FracSpecReflec(I))
+            SpecReflec(I) = TotalReflec * FracSpecReflec(I)
+        ELSE IF (SType(I) == "SDRO") THEN
+            TotalReflec = 1 - Emit(I)
+            DiffReflec(I) = TotalReflec * (1 - FracSpecReflec(I))
+            SpecReflec(I) = TotalReflec * FracSpecReflec(I)
         ELSE
             SType(I) = "DIF"
+            DiffReflec(I) = 1 - Emit(I)
         END IF
     END DO
 
@@ -328,7 +343,7 @@ Function Norm_V(V)
     Norm_V = SQRT(DOT_PRODUCT(V, V))
 END Function Norm_V
 
-SUBROUTINE AllocateArrays()
+SUBROUTINE AllocateAndInitArrays()
 !******************************************************************************
 !
 !  PURPOSE:        Allocates the arrays
@@ -340,43 +355,39 @@ SUBROUTINE AllocateArrays()
     INTEGER :: I, J, IOS
 
     ALLOCATE(NAEnergy(NSurf, NSurf))
-    ALLOCATE(TCOUNTA(NSurf), TCOUNTR(NSurf), TCOUNTRR(NSurf), NTOTAL(NSurf), STAT = IOS)
+    !ALLOCATE(TCOUNTA(NSurf), TCOUNTR(NSurf), TCOUNTRR(NSurf), NTOTAL(NSurf), STAT = IOS)
+    ALLOCATE(TCOUNTA(NSurf), STAT = IOS)
     ALLOCATE(XLS(NSurf), YLS(NSurf), ZLS(NSurf), STAT = IOS)
     ALLOCATE(XP(NSurf, NSurf), YP(NSurf, NSurf), ZP(NSurf, NSurf), Intersection(NSurf, NSurf), STAT = IOS)
     ALLOCATE(Xo(NSurf), Yo(NSurf), Zo(NSurf), Intersects(NSurf), STAT = IOS)
-    ALLOCATE(TSpecA(NSurf), TSpecR(NSurf), TSpecRR(NSurf), NAEnergyS(NSurf, NSurf), NAEnergyR(NSurf, NSurf), NAEnergyWR(NSurf, NSurf))
+    ALLOCATE (EmittedUV(NSurf, 3), STAT = IOS )
+
+    NAEnergy = 0
+    TCOUNTA = 0
+    XLS = 0
+    YLS = 0
+    ZLS = 0
+    XP = 0
+    YP = 0
+    ZP = 0
+    Intersection = 0
+    Xo = 0
+    Yo = 0
+    Zo = 0
+    EmittedUv = 0
+    !ALLOCATE(TSpecA(NSurf), TSpecR(NSurf), TSpecRR(NSurf), NAEnergyS(NSurf, NSurf), NAEnergyR(NSurf, NSurf), NAEnergyWR(NSurf, NSurf))
 
    !Setting Specular Counter arrays to 0
-    DO I = 1, NSurf  !JH
-        TSpecA(I) = 0
-        TSpecR(I) = 0
-        TSpecRR(I) = 0
-        DO J = 1, NSurf
-            NAEnergyS(I, J) = 0
-            NAEnergyR(I, J) = 0
-            NAEnergyWR(I, J) = 0
-        END DO
-    END DO
-END SUBROUTINE AllocateArrays
-
-SUBROUTINE InitializeArrays()
-!******************************************************************************
-!
-!  PURPOSE:        Initializes the arrays
-!
-!
-!******************************************************************************
-
-    IMPLICIT NONE
-    INTEGER :: I, J
-
-    !  Initialize absorbed and reflected energy bundle counter arrays
-    DO I = 1, NSurf
-        DO J = 1, NSurf
-            NAEnergy(I, J) = 0
-        END DO
-        TCOUNTA(I) = 0; TCOUNTR(I) = 0; TCOUNTRR(I) = 0
-    END DO
-END SUBROUTINE InitializeArrays
+    !DO I = 1, NSurf  !JH
+    !    TSpecA(I) = 0
+    !    TSpecR(I) = 0
+    !    TSpecRR(I) = 0
+    !    DO J = 1, NSurf
+    !        NAEnergyS(I, J) = 0
+    !        NAEnergyR(I, J) = 0
+    !        NAEnergyWR(I, J) = 0
+    !    END DO
+    !END DO
+END SUBROUTINE AllocateAndInitArrays
 
 END MODULE EnclosureGeometry

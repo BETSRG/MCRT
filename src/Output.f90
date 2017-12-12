@@ -47,9 +47,9 @@ SUBROUTINE PrintViewFactorHeatFlux()
 
     DO K = 1, NSurf
         WRITE(3, 1001)NAEnergy(K, :), TCOUNTA(K)
-        WRITE(6, 1001)NAEnergyS(K, :), TSpecA(K) ! JH !Writing the number of total specular rays absorbed at each surface
-        WRITE(9, 1001)NAEnergyR(K, :), TSpecR(K) ! Writing the number of reflected specular rays absorbed at each surface
-        WRITE(10, 1001)NAEnergyWR(K, :), (TSpecA(K) - TSpecR(K))   ! Writing the number of specular rays absorbed on first contact at each surface
+        !WRITE(6, 1001)NAEnergyS(K, :), TSpecA(K) ! JH !Writing the number of total specular rays absorbed at each surface
+        !WRITE(9, 1001)NAEnergyR(K, :), TSpecR(K) ! Writing the number of reflected specular rays absorbed at each surface
+        !WRITE(10, 1001)NAEnergyWR(K, :), (TSpecA(K) - TSpecR(K))   ! Writing the number of specular rays absorbed on first contact at each surface
     END DO
 
 1001 FORMAT(2x, 100(x, I8), I10)
@@ -63,9 +63,9 @@ SUBROUTINE PrintViewFactorHeatFlux()
 
      DO Index = 1, NSurf_cmb
         WRITE(3, 102)(RAD_D_F_cmb(Index, J), J = 1, NSurf_cmb)   ! Diffuse distribution factors
-        WRITE(6, 102)(RAD_D_S_cmb(Index, J), J = 1, NSurf_cmb)   ! Total specular distribution factors
-        WRITE(9, 102)(RAD_D_R_cmb(Index, J), J = 1, NSurf_cmb)   ! Reflected specular distribution factors
-        WRITE(10, 102)(RAD_D_WR_cmb(Index, J), J = 1, NSurf_cmb) ! Absorbed at first intersection specular distribution factors
+        !WRITE(6, 102)(RAD_D_S_cmb(Index, J), J = 1, NSurf_cmb)   ! Total specular distribution factors
+        !WRITE(9, 102)(RAD_D_R_cmb(Index, J), J = 1, NSurf_cmb)   ! Reflected specular distribution factors
+        !WRITE(10, 102)(RAD_D_WR_cmb(Index, J), J = 1, NSurf_cmb) ! Absorbed at first intersection specular distribution factors
      END DO
 
     ! Write csv file for combined surface
@@ -79,12 +79,12 @@ SUBROUTINE PrintViewFactorHeatFlux()
     ! Writing the rest of the outputs for MCOutput.txt
 102  FORMAT(4x, 100(2x, f10.6))
 
-     WRITE(3, 103)'Index', 'SURF_NAME', 'Temperature', 'Emissivity', 'Heat Flux', 'Heat Transfer Rate'
+     WRITE(3, 103)'Index', 'SurfName', 'Temperature', 'Emissivity', 'Heat Flux', 'Heat Transfer Rate'
 
 103  FORMAT(///, 8x, A5, 2x, A10, 6x, A12, 2x, A12, 4x, A12, 8x, A19)
 
      DO Index = 1, NSurf
-        WRITE(3, 104)Index, SURF_NAME(Index), TS(Index), EMIT(Index), QFLUX(Index), Q(Index)
+        WRITE(3, 104)Index, SurfName(Index), TS(Index), Emit(Index), QFLUX(Index), Q(Index)
 104     FORMAT(7x, I3, 8x, A12, 4x, F7.2, 8x, F5.2, 8x, ES12.3, 10x, ES12.3)
      END DO
 
