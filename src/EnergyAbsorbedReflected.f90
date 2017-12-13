@@ -53,6 +53,7 @@ SUBROUTINE AbsorptionReflection()
     ELSE
         ! Absorb
         RayAbsorbed = .true.
+        NAEnergy(SIndexRef, SInter) = NAEnergy(SIndexRef, SInter) + 1
     END IF
 
     ! Write point data to RTVT file

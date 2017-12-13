@@ -23,10 +23,15 @@ SUBROUTINE RadDistributionFactors
     INTEGER, ALLOCATABLE, DIMENSION(:, :) :: NAEnergy_cmb
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: Area_cmb_temp, Emit_cmb_temp
 
+    ! Delete me
+    REAL(Prec2) :: Num, Den
+
     ALLOCATE(NumEmitted(NSurf), STAT = IOS)
     ALLOCATE(RAD_D_F(NSurf, NSurf), STAT = IOS)
     ALLOCATE(NAEnergy_cmb(NSurf, NSurf), STAT = IOS)
     ALLOCATE(Area_cmb_temp(NSurf), Emit_cmb_temp(NSurf), STAT = IOS)
+
+    RAD_D_F = 0
 
     ! Populate array for orignial surfaces
     DO I = 1, NSurf
@@ -35,10 +40,26 @@ SUBROUTINE RadDistributionFactors
             IF (TCOUNTA(I) .EQ. 0) THEN
                 RAD_D_F(I, J) = 0
             ELSE
-                RAD_D_F(I, J) = REAL(NAEnergy(I, J)) / REAL(TCOUNTA(J))
+                RAD_D_F(I, J) = REAL(NAEnergy(I, J)) / REAL(TCOUNTA(I))
             ENDIF
         END DO
     END DO
+
+    ! Delete this section
+    OPEN(Unit = 21, File = 'NAEnergy.csv', status = 'unknown', IOSTAT = IOS)
+401 FORMAT(I3, 100(', ', I3))
+    DO I = 1, NSurf
+        WRITE(21, 401)NAEnergy(I, 1), (NAEnergy(I, J), J = 2, NSurf)
+    END DO
+    CLOSE(Unit = 21)
+
+    ! Delete this section
+    OPEN(Unit = 22, File = 'RAD_D_F.csv', status = 'unknown', IOSTAT = IOS)
+402 FORMAT(f10.6, 100(', ', f10.6))
+    DO I = 1, NSurf
+        WRITE(22, 402)RAD_D_F(I, 1), (RAD_D_F(I, J), J = 2, NSurf)
+    END DO
+    CLOSE(Unit = 22)
 
     ! Now combine surfaces
 
@@ -64,6 +85,7 @@ SUBROUTINE RadDistributionFactors
 
     ! Initialize arrays
     RAD_D_F_cmb = 0
+    NumEmitted = 0
 
     ! Combine count
     DO I = 1, NSurf
@@ -71,7 +93,7 @@ SUBROUTINE RadDistributionFactors
         IF (CMB(I) .gt. 0) THEN
             NumEmitted(I) = 0
         ELSE
-            NumEmitted(I) = TCOUNTA(I)
+        NumEmitted(I) = TCOUNTA(I)
         ENDIF
 
         DO J = 1, NSurf
@@ -92,6 +114,13 @@ SUBROUTINE RadDistributionFactors
         END DO
     END DO
 
+    ! Delete this section
+    OPEN(Unit = 23, File = 'NAEnergy_cmb_col.csv', status = 'unknown', IOSTAT = IOS)
+    DO I = 1, NSurf
+        WRITE(23, 401)NAEnergy_cmb(I, 1), (NAEnergy_cmb(I, J), J = 2, NSurf)
+    END DO
+    CLOSE(Unit = 23)
+
     ! Combine rows
     DO I = 1, NSurf
         DO J = 1, NSurf
@@ -103,16 +132,23 @@ SUBROUTINE RadDistributionFactors
         END DO
     END DO
 
+    ! Delete this section
+    OPEN(Unit = 24, File = 'NAEnergy_cmb_row.csv', status = 'unknown', IOSTAT = IOS)
+    DO I = 1, NSurf
+        WRITE(24, 401)NAEnergy_cmb(I, 1), (NAEnergy_cmb(I, J), J = 2, NSurf)
+    END DO
+    CLOSE(Unit = 24)
+
     ! Copy to new reduced arrays
     K = 0
     DO I = 1, NSurf
-        IF (NumEmitted(I) == 0) THEN
+        IF (CMB(I) .gt. 0) THEN
             CYCLE
         ELSE
             K = K + 1
             L = 0
             DO J = 1, NSurf
-                IF (NumEmitted(J) == 0) THEN
+                IF (CMB(J) .gt. 0) THEN
                     CYCLE
                 ELSE
                     L = L + 1
@@ -121,12 +157,21 @@ SUBROUTINE RadDistributionFactors
                     IF (NumEmitted(I) == 0) THEN
                         RAD_D_F_cmb(K, L) = 0
                     ELSE
+                        Num = REAL(NAEnergy_cmb(I, J))
+                        Den = REAL(NumEmitted(I))
                         RAD_D_F_cmb(K, L) = REAL(NAEnergy_cmb(I, J)) / REAL(NumEmitted(I))
                     END IF
                 END IF
             END DO
         END IF
     END DO
+
+    ! Delete this section
+    OPEN(Unit = 25, File = 'RAD_D_F_cmb.csv', status = 'unknown', IOSTAT = IOS)
+    DO I = 1, NSurf_cmb
+        WRITE(25, 402)RAD_D_F_cmb(I, 1), (RAD_D_F_cmb(I, J), J = 2, NSurf_cmb)
+    END DO
+    CLOSE(Unit = 25)
 
     ! Combined surface areas
     ! Combined surface emittances

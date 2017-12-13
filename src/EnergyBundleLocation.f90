@@ -273,7 +273,7 @@ SUBROUTINE DirectionEmittedEnergy()
 
     IF (.not. Reflected) THEN
         ! Emitted rays
-        IF ((REAL(BIndex) / REAL(NBundles)) < FracSpecEmit(SIndex)) THEN
+        IF ((REAL(BIndex) / REAL(NBundles)) .le. FracSpecEmit(SIndex)) THEN
             ! Emit Specularly
             EmittedUV(SIndex, 1) = DirectionX(SIndex)
             EmittedUV(SIndex, 2) = DirectionY(SIndex)

@@ -62,6 +62,7 @@ PROGRAM MainMonteCarlo
 
             ! Run for all bundles
             DO BIndex = 1, NBundles
+                TCOUNTA(SIndexRef) = TCOUNTA(SIndexRef) + 1
                 SIndex = SIndexRef
                 Reflected = .False.
                 RayAbsorbed = .false.
