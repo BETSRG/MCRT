@@ -94,9 +94,9 @@ SUBROUTINE CalculateGeometry()
             BACKSPACE(2)
             READ(2, *) ReadStr, TypeIndex, SType(TypeIndex)
             BACKSPACE(2)
-            IF (SType(TypeIndex) == "SDE") THEN
+            IF (StrUpCase(SType(TypeIndex)) == "SDE") THEN
                 READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), DirectionX(TypeIndex), DirectionY(TypeIndex), DirectionZ(TypeIndex), FracSpecEmit(TypeIndex), FracSpecReflec(TypeIndex)
-            ELSE IF (SType(TypeIndex) == "SDRO") THEN
+            ELSE IF (StrUpCase(SType(TypeIndex)) == "SDRO") THEN
                 READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex), FracSpecReflec(TypeIndex) ! Reading in specular and diffuse reflection
             ELSE
                 READ(2, *) ReadStr, SNumber(TypeIndex), SType(TypeIndex)
@@ -111,11 +111,11 @@ SUBROUTINE CalculateGeometry()
     ! If no surface types were provided, set them to DIF here
     ! Update reflectance/emittance values and fractions here
     DO I = 1, NSurf
-        IF (SType(I) == "SDE") THEN
+        IF (StrUpCase(SType(I)) == "SDE") THEN
             TotalReflec = 1 - Emit(I)
             DiffReflec(I) = TotalReflec * (1 - FracSpecReflec(I))
             SpecReflec(I) = TotalReflec * FracSpecReflec(I)
-        ELSE IF (SType(I) == "SDRO") THEN
+        ELSE IF (StrUpCase(SType(I)) == "SDRO") THEN
             TotalReflec = 1 - Emit(I)
             DiffReflec(I) = TotalReflec * (1 - FracSpecReflec(I))
             SpecReflec(I) = TotalReflec * FracSpecReflec(I)
