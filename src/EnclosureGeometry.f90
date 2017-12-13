@@ -108,6 +108,21 @@ SUBROUTINE CalculateGeometry()
         ENDIF
     END DO
 
+    ! Check for out of range specular/emitting fractions
+    DO I = 1, NSurf
+        IF (FracSpecEmit(I) .gt. 1) THEN
+            FracSpecEmit(I) = 1
+        ELSE IF (FracSpecEmit(I) .lt. 0) THEN
+            FracSpecEmit(I) = 0
+        END IF
+
+        IF (FracSpecReflec(I) .gt. 1) THEN
+            FracSpecReflec(I) = 1
+        ELSE IF (FracSpecReflec(I) .lt. 0) THEN
+            FracSpecReflec(I) = 0
+        END IF
+    END DO
+
     ! If no surface types were provided, set them to DIF here
     ! Update reflectance/emittance values and fractions here
     DO I = 1, NSurf

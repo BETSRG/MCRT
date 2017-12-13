@@ -20,11 +20,11 @@ PROGRAM MainMonteCarlo
     CALL CPU_TIME(TIME1)
 
     OPEN(Unit = 2, file = 'input.vs3', status = 'unknown', Action = 'READ', IOSTAT = IOS)
-    OPEN(Unit = 3, file = 'MCoutput.txt', status = 'unknown', IOSTAT = IOS)     ! Diffuse bundles and distribution factors
+    OPEN(Unit = 3, file = 'MC-Output.txt', status = 'unknown', IOSTAT = IOS)     ! Diffuse bundles and distribution factors
     OPEN(Unit = 4, file = 'logfile.dat', status = 'unknown', IOSTAT = IOS)      ! Ray emission, reflection, and absorption points
     OPEN(Unit = 7, File = 'input.TK', status = 'unknown', IOSTAT = IOS)         ! Surface temperatures
     OPEN(Unit = 8, File = 'parameters.txt', status = 'old', IOSTAT = IOS)       ! Geometry and ray data for RTVT
-    OPEN(Unit = 12, File = 'MCOutput.csv', status = 'unknown', IOSTAT = IOS)     ! csv file with diffuse distribution factors
+    OPEN(Unit = 12, File = 'MC-Output.csv', status = 'unknown', IOSTAT = IOS)     ! csv file with diffuse distribution factors
 
     ! Read simulation parameters
     READ(8, *) NBundles
