@@ -1,0 +1,16 @@
+! # x y z coordinates of vertices
+v 1 0.0 0.0 0.0
+v 2 6.0 0.0 0.0
+v 3 6.0 4.0 0.0
+v 4 0.0 4.0 0.0
+v 5 0.0 0.0 3.0
+v 6 6.0 0.0 3.0
+v 7 6.0 4.0 3.0
+v 8 0.0 4.0 3.0
+! # v1 v2 v3 v4 base cmb emit names
+s 1 5 8 7 6 0 0 1.0 Roof
+s 2 1 2 3 4 0 0 1.0 Floor
+s 3 1 4 8 5 0 0 1.0 WestW
+s 4 3 2 6 7 0 0 1.0 EastW
+s 5 4 3 7 8 0 0 1.0 NorthW
+s 6 1 5 6 2 0 0 1.0 SothW
