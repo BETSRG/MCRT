@@ -2,6 +2,7 @@
 
 \usepackage{geometry}
 \usepackage{graphicx}
+\usepackage{amsmath}
 
 % script F
 \usepackage{mathrsfs}
@@ -66,31 +67,39 @@ Computation of the radiant energy exchange between surfaces within an enclosure 
     \label{eq:dist-to-totExchArea}
 \end{equation}
 
-where, $\varepsilon_i$ is the surface emissivity and $A_i$ is the surface area. \cite{Modest2003}, and others commonly refer to this as the ``Script-F" view factor, $\mathscr{F}_{ij}$. With these distribution factors, users can apply the net-radiant exchange or zonal methods to solve for the radiant energy exchange within an enclosure.
+where, $\varepsilon_i$ is the surface emissivity and $A_i$ is the surface area. \cite{Modest2003}, and others commonly refer to this as the ``Script-F" view factor, $\mathscr{F}_{ij}$. With these distribution factors, users can apply the net-radiant exchange or zonal methods to solve for the radiant energy exchange within an enclosure. 
 
-A description of the methodology used to compute the distribution factors is given in Section \ref{sec:method}. Information regarding program input and output can be found in Sections \ref{sec:input} and \ref{sec:output}, respectively. A limited set of tests are outlined in Section \ref{sec:testing}. Finally, recommended future work is described in Section \ref{sec:future work}.
+\citep{HolmanSpitlerSikha2012} completed additional work on the MCRT program by correcting how non-rectangular quadrilateral surfaces are treated. They also describe how ray a reflected specularly.
+
+A description of the methodology used to compute the distribution factors is given in Section \ref{sec:method}. Information regarding program input and output can be found in Sections \ref{sec:input} and \ref{sec:output}, respectively. Finally, recommended future work is described in Section \ref{sec:future work}.
 
 \section{Methodology}
 \label{sec:method}
 
-For a full description of the methodology, see \citep{Nigusse2004}. In summary, the program assumes a gray enclosure. Using the input information defined in Section \ref{sec:input}, the program defines surface equations, normal vectors, tangent vectors, and surface areas for each surface. Then from each surface, $i$, the program emits a user-specified number of rays. Once the ray is absorbed by another surface, $j$, 1 is added to the distribution factor $D_{ij}$ for that surface. $D_{ij}$ is then normalized by the total number of surface rays emitted by surface $i$ at the end of the simulation. The direction the ray is emitted or reflected depends on the respective surface type. This is summarized in the following algorithm.
+For a full description of the original methodology, see \cite{Nigusse2004}. In summary, the program assumes a gray enclosure. Using the input information defined in Section \ref{sec:input}, the program defines surface equations, normal vectors, tangent vectors, and surface areas for each surface. Then from each surface, $i$, the program emits a user-specified number of rays. Once the ray is absorbed by another surface, $j$, 1 is added to the distribution factor $D_{ij}$ for that surface. $D_{ij}$ is then normalized by the total number of surface rays emitted by surface $i$ at the end of the simulation. The direction the ray is emitted or reflected depends on the respective surface type. This is summarized in Algorithm \ref{alg:mcrt}.
 
 \begin{algorithm}
 \caption{MCRT algorithm}
+\label{alg:mcrt}
 \begin{algorithmic}[1]
 \Procedure{MCRT}{}
 \State Read vertex and surface geometry and properties
 \State Initialize simulation
 \State Determine surface normal vectors, tangent vectors, surface equations, and surface areas
-\For{$N_{surf}$}
-\For{$N_{bundle}$}
+\For{$i = 1$ to $N_{surf}$}
+\For{$N_{ray}$}
 \State Determine bundle emission point
 
-\State Determine direction of emitted bundle
+\State Determine direction of emitted/reflected ray
 
-\State Determine bundle intersection point
+\State Determine ray/surface intersection point
 
 \State Check for absorption or reflection
+\If{Reflected}
+\State Return to 8
+\Else
+\State $D_{ij} \mathrel{+}= 1$ 
+\EndIf
 \EndFor
 \EndFor
 \State Compute distribution factors
@@ -108,7 +117,7 @@ MCRT leverages the input format used by the View3D program \citep{Walton2002}. I
 
 \subsubsection{input.vs3}
 
-The input.vs3 file will contain all of the information defined in Sections \ref{subsec:verts}--\ref{subsec:comments}. The file must be named ``input.vs3" and be located in the same directory as the MCRT executable. An example input.vs3 file is provide below.
+The input.vs3 file will contain all of the information defined in Sections \ref{subsec:verts}--\ref{subsec:comments}. The file must be named ``input.vs3" and be located in the same directory as the MCRT executable. An example input.vs3 file is provide below. The file is a modified form of the input file for the View3D program.
 
 \begin{lstlisting}
 !   #   x   y   z
@@ -141,8 +150,7 @@ S  11  14  10   9   8   0   0   0.90   South-Ceiling
 S  12  14  11  10   0   0   11  0.90   Angle-Ceiling
 S  13  13  12  11  14   0   11  0.90   North-Ceiling
 ! #  Type
-T 1  SDE  0  1  0
-T 2  DIF
+T 1  SDE  0  1  0 0.5 0.5
 \end{lstlisting}
 
 \subsubsection{input.TK}
@@ -195,9 +203,9 @@ As currently programmed, column 1 indicates the lowest surface number in a conti
 
 \subsubsection{parameters.txt}
 
-The parameters.txt file will contain two pieces of information. The first line indicates the number of rays to be emitted per surface; the second line indicates whether the simulation is to populate the ``logfile.dat" file which is used by the Ray Tracing Visualization Tool (RTVT) program \footnote{Reference needed.} \footnote{RTVT is a graphical program which will read the logfile.dat file, render a wireframe mesh of the enclosure, and trace the rays from surface-to-surface. This program is not suited to render any more than a few hundred rays per surface and no more than 24--36 surfaces.}. A value of ``1" indicates the file is to be populated; any other value will not populate the logfile.
+The parameters.txt file will contain two pieces of information. The first line indicates the number of rays to be emitted per surface for each emitting surface; the second line indicates whether the simulation is to populate the ``logfile.dat" file which is used by the Ray Tracing Visualization Tool (RTVT) program \citep{RTVT} \footnote{RTVT is a graphical program which will read the logfile.dat file, render a wireframe mesh of the enclosure, and trace the rays from surface-to-surface. This program is not suited to render any more than a few hundred rays per surface and no more than 24--35 surfaces. The program has been found to work with 24 surfaces, but not 36.}. A value of ``1" indicates the file is to be populated; any other value will not populate the logfile.
 
-The the file must be name ``parameters.txt" and be located in the same directory as the MCRT executable. An example input file is shown below, where 1000 rays per surface are to be emitted, and no log file is to be written.
+The the file must be name ``parameters.txt" and be located in the same directory as the MCRT executable. An example input file is shown below, where 1000 rays per emitting surface are to be emitted, and no log file is to be written.
 
 \begin{lstlisting}
 1000
@@ -252,18 +260,74 @@ References to the vertex numbers defined previously are given in columns v1--v4.
 
 \subsection{Surface Types}
 \label{subsec:surftypes}
-Surface types define how each surface is evaluated within MCRT. If the surface definition is not provided, the surface is assumed to be a diffusely emitting surface. Descriptions of the surface type definitions are provided below from \cite{HolmanSpitlerSikha2012}.
+Surface types define how each surface is evaluated within MCRT. Descriptions of the surface type definitions are provided below. All surface type definitions must begin with a ``T" followed by the surface number. Additional input data depending on the various surface types are described in the following sections.
 
 \subsubsection{DIF---Diffuse Emitting}
 \label{s-s-sec:dif}
 
+DIF surfaces emit and reflect diffusely. The number of rays emitted by the surface are specified in parameters.txt file. The surface is assumed to be a gray surface meaning that emissivity equals absorptivity, i.e.~$\varepsilon = \alpha$. Diffuse reflectance, $\rho_{d}$, is defined in Equation \ref{eq:diff reflect}. 
+
+\begin{equation}
+   \label{eq:diff reflect}
+   \rho_{d} = 1 - \varepsilon 
+\end{equation}
+
+Surfaces can be explicitly defined as DIF by the user in the input file, as shown below. The user can also omit this information from the input file and the surface will automatically be given a default DIF type if no other surface type has been specified.
+
+\begin{lstlisting}
+! # Type
+T 1 DIF
+\end{lstlisting}
+
 \subsubsection{SDE---Specular and Diffuse Emitting}
 
-\subsubsection{SDR---Specular and Diffuse Reflecting}
+SDE surfaces emit and reflect diffusely and specularly, depending on the user input parameters. Input parameters for SDE surfaces are given below.
 
-\subsubsection{DRO---Diffuse Reflection Only}
+\begin{lstlisting}
+! # Type x y z Fse Fsr
+T 3 SDE  0 1 0 0.5 0.5
+\end{lstlisting}
 
-\subsubsection{SRO---Specular Reflection Only}
+$x, y, z$ parameters define the direction of specular emittance. $F_{s,e}$ defines the fraction of the total number of rays emitted by the surface (as specified in parameters.txt) which will be emitted specularly. $F_{s,r}$ defines the fraction of incident rays which are reflected specularly. $F_{s,r}$ is used to specify the diffuse and specular reflectances $(\rho_d, \rho_s)$ as shown below beginning at Equation \ref{eq: rho tot}.
+
+\begin{align}
+    \label{eq: rho tot}
+    &\rho_{tot} = 1 - \varepsilon \\
+    &\rho_d = \rho_{tot} \cdot (1 - F_{s,r}) \\
+    &\rho_s = \rho_{tot} \cdot F_{s,r}
+\end{align}
+
+Essentially, $\rho_d$ and $\rho_s$ represent the chance that each incident ray has of being reflected diffusely or specularly, respectively. The mittance, $\varepsilon$, is taken from the surface definition and represents the total absorptance in Equation \ref{eq: rho tot}.
+
+Determining how rays incident on SDE surfaces are diffusely or specularly reflected is described in Algorithm \ref{alg: Dif-Spec Reflect}. In the example SDE surface input given above, the surface emits specular rays in the positive $y$ direction given the $(0, 1, 0)$ coordinates. $F_{s,e}$ and $F_{s,r}$ are both set to $0.5$. 
+
+\begin{algorithm}
+\caption{Diffuse/Specular Reflection Algorithm}
+\label{alg: Dif-Spec Reflect}
+\begin{algorithmic}[1]
+\Procedure{Reflect or Absorb}{}
+\State Generate a random number, $R_{incident}$, from 0--1
+\If{$R_{incident} < \rho_d$}
+\State Reflect Diffusely
+\ElsIf{$ \rho_d < R_{incident} < \rho_d + \rho_s$}
+\State Reflect Specularly
+\Else
+\State Absorb Ray
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{SDRO---Specular and Diffuse Reflecting Only}
+
+SDRO surfaces only reflect rays as described previously in the SDE surface type description. No rays are emitted by SDRO surfaces. An example SDRO surface input is given below.
+
+\begin{lstlisting}
+! # Type Fsr
+T 3 SDRO 0.5
+\end{lstlisting}
+
+The fraction of specularly reflected rays, $F_{s,r}$, parameter is a required input and is used to calculate the diffuse and specular reflectance as shown beginning in Equation \ref{eq: rho tot}. 
 
 \subsection{Comment Lines}
 \label{subsec:comments}
@@ -272,13 +336,34 @@ Comment lines begin with an ``!" and are not read by the program.
 \section{Output}
 \label{sec:output}
 
-\subsection{MCOutput.txt}
+The program creates several output files which indicate the distribution factors for the enclosure and the results of solving the heat balance. These output files are described in the following sections.
+
+\subsection{MC-Output.txt}
+
+MC-Output.txt is the main text file for the MCRT program. The file contains three blocks of information which are described below.
+
+\begin{enumerate}
+    \item The first block represents the integer-valued distribution factors. These are the raw count of all rays which were emitted by surface $i$ (row number) and absorbed by surface $j$ (column number). The right-most column indicates the total number of rays emitted by surface $i$.
+    
+    \item The second block represents the normalized distribution factors for all surfaces, including combined surfaces. Once the integer-valued distribution factors from the first block have been combined together, they are divided by the total number of rays emitted by surface $i$ and reported in this block.
+    
+    \item The third block represent the output from the heat flux calculations. The original, non-combined surfaces are used to compute the heat flux and reported as is without combining the surfaces.
+\end{enumerate}
+
+\subsection{MC-Output.csv}
+
+MC-Output.csv is a comma-separated file which should be identical in format to the output file provided by View3D. Data for all combined surfaces are processed and reported in this file. The first row indicates the surface area. The final row indicates the surface emissivity. For combined surfaces, combined surface emissivity is computed using an area-weighted average of the emissivity of all subsurfaces. Data between the first and last rows are the normalized distribution factors for all surfaces, including combined surfaces.
 
 \subsection{logfile.dat}
 
-\section{Testing}
-\label{sec:testing}
+logfile.dat is the input file for the RTVT program. RTVT reads this file to generate a wireframe of the enclosure, and trace rays from the point of emission to the point where they are absorbed. The vertex and surface information are copied directly from the input.vs3 file. Ray tracing information from MCRT is output to the file in the following format.
 
+\begin{lstlisting}
+!  #  x      y      z      #  x      y      z     End
+P  1 10.251  0.000  4.219 11  9.369  0.187  5.000 0
+\end{lstlisting}
+
+``P" indicates that the data contained in the line is a point. After that, a surface number, along with $x, y, z$ coordinates are given. This information is repeated until the ray is absorbed. The end of line indicator is the ``0" character.
 
 \section{Future Work}
 \label{sec:future work}
@@ -288,21 +373,26 @@ The following list outlines the some of the program's deficiencies. Some of thes
 \subsection{Features}
 
 \begin{itemize}
-	\item Reflectance Models:
+	\item Reflectance Models: the program currently uses a simplified reflectance model. For some surfaces such as glass, reflectance is dependent on the incident angle. There a large number of scholarly publications regarding bi-directional reflectivity functions. Exploring this could be one potential solution method for incorporating better reflectance models.
+	
+	\item Semi-opaque Surfaces:	Some surfaces, such as glass, should allow rays to be transmitted instead of simply absorbed or reflected. Incorporating this feature would allow additional interesting physics to be simulated, such as solar gain through windows.
 
 	\item Participating Media: the current program does not simulate participating media, but this would be an interesting feature to add. A major hurdle that needs to be overcome to solve this problem is that of gridding the domain. Participating media is a volumetric phenomena, and therefore the volume of the enclosure needs to be broken in to smaller blocks which all need to interact with one another. A first pass at accomplishing this task would be to handle rectangular-only enclosures first, then work to develop a more generalized code base.
 
 	\item Adaptive Solution: current program emits the user-specified number at each run. An adaptive solution could be implemented which will run, say, \SI{1E5}{} rays then run another \SI{1E5}{} rays and compare the solutions. If the difference between the distribution factors for \SI{1E5}{} and \SI{2E5}{} is within a user-specified tolerance, the solution could stop there. If not, another \SI{1E5}{} rays could be run and the check repeated until the solutions converge to within tolerance. The tolerance, step-size, and max/min number of rays should all be user-defined parameters.
+
+    \item Two-band Emission: this would allow for more complex physics, such as solar and thermal radiation to be simulated simultaneously.
+	
 \end{itemize}
 
 \subsection{Programming}
 
 \begin{itemize}
-    \item Command Line Arguments: the input file names for the programs are currently hard coded. A better, more generalized way would be to pass these to the program as command line arguments. That way, multiple input files with different names could be run in the same directory without needing extra manual or scripting work to move or rename files.
+    \item Command Line Arguments: the input file names for the programs are currently hard coded. A better, more generalized way would be to pass these to the program as command line arguments. That way multiple input files with different names could be run in the same directory without needing extra manual or scripting work to move or rename files.
 
     \item Negative Vertex Coordinates: when negative vertex coordinates are passed to the program, the program crashes.
 
-    \item Heat Balance Inputs: some cleanup could occur for the heat balance inputs, i.e. the input.TK file. First would be to require no ``0 0 0" to indicate the end of the file. The second may be to develop a better input scheme for the data.
+    \item Heat Balance Inputs: some cleanup could occur for the heat balance inputs, i.e. the input.TK file. First would be to not require ``0 0 0" to indicate the end of the file. The second may be to develop a better input scheme for the data.
 
     \item Testing: the program only has a limited number of documented tests. This should be integrated with the next bullet point, Continuous Integration. In general, the idea is to develop sets of tests based on independent reference data which are run continuously during the development process to ensure the program works.
 
@@ -312,7 +402,7 @@ The following list outlines the some of the program's deficiencies. Some of thes
 
     \item General Code Refactoring: the code relies on global variables everywhere in the code. Some thought should be given to a better code architecture which facilitates code reuse and facilitates program modifications.
 
-    \item RTVT: while not part of MCRT, the program is important to the MCRT project. RTVT currently is limited to between 24--36 surfaces, and should be limited to a few hundred rays per surface. The program was originally written in VB6, which is no longer supported on Windows platforms. Although the program appears to function as basically intended on current Windows 7 \& 10 installations, this is not expected to continue indefinitely. Bringing the code up to be compliant with current VB.net coding practices could be useful. However, if someone is going to go to this level of effort, perhaps a better solution would be to rewrite the program entirely in a cross-platform compatible language such as Python.
+    \item RTVT: while not part of MCRT, the program is important to the MCRT project. RTVT currently is limited to between 24--36 surfaces, and should be limited to a few hundred rays per surface. The program was originally written in VB6, which is no longer supported on Windows platforms. Although the program appears to function as intended on current Windows 7 \& 10 installations, this is not expected to continue indefinitely. Bringing the code up to be compliant with current VB.net coding practices could be useful. However, if someone is going to go to this level of effort, perhaps a better solution would be to rewrite the program entirely in a cross-platform compatible language such as Python.
 
 \end{itemize}
 

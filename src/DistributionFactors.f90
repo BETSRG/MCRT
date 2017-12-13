@@ -33,7 +33,6 @@ SUBROUTINE RadDistributionFactors
     ! Populate array for orignial surfaces
     DO I = 1, NSurf
         DO J = 1, NSurf
-            ! Diffuse rays
             IF (TCOUNTA(I) .EQ. 0) THEN
                 RAD_D_F(I, J) = 0
             ELSE
@@ -120,7 +119,6 @@ SUBROUTINE RadDistributionFactors
                 ELSE
                     L = L + 1
 
-                    ! Diffuse rays
                     IF (NumEmitted(I) == 0) THEN
                         RAD_D_F_cmb(K, L) = 0
                     ELSE
