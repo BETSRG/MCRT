@@ -42,6 +42,7 @@ SUBROUTINE RadDistributionFactors
 
     ! Now combine surfaces
 
+    N_SCMB = 0
     ! Identify number of surface combinations
     DO I = 1, NSurf
         DO J = 1, NSurf

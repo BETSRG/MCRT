@@ -53,8 +53,6 @@ SUBROUTINE PrintViewFactorHeatFlux()
 
      WRITE(3, 1002)
      WRITE(6, 1002)
-     WRITE(9, 1002)
-     WRITE(10, 1002)
 
 1002 FORMAT(//)
 
