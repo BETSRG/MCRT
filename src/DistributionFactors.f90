@@ -56,7 +56,6 @@ SUBROUTINE RadDistributionFactors
     ! Number of surfaces after combined
     NSurf_cmb = NSurf - N_SCMB
 
-    !ALLOCATE(RAD_D_F_cmb(NSurf_cmb, NSurf_cmb), RAD_D_S_cmb(NSurf_cmb, NSurf_cmb), RAD_D_R_cmb(NSurf_cmb, NSurf_cmb), RAD_D_WR_cmb(NSurf_cmb, NSurf_cmb), STAT = IOS)
     ALLOCATE(RAD_D_F_cmb(NSurf_cmb, NSurf_cmb), STAT = IOS)
     ALLOCATE(Area_cmb(NSurf_cmb), Emit_cmb(NSurf_cmb), STAT = IOS)
 

@@ -273,8 +273,8 @@ SUBROUTINE CalculateAreaSurfaces()
     INTEGER :: I, J, IOS
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(Prec2), DIMENSION(:) :: X(4), Y(4), Z(4)
-    REAL(Prec2), ALLOCATABLE, DIMENSION(:, :) :: LR, LT
-    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: S
+    REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: LR, LT
+    REAL(Prec2) :: S
 
     !   LR            Length and width of a rectangular surface in the enclosure
     !   LT            The three sides of a triangular surface in the enclosure
@@ -287,7 +287,7 @@ SUBROUTINE CalculateAreaSurfaces()
     !   Assign the surfaces their corresponding vertices and coordinates and
     !   and calculate areas of rectangular and triangular polygons
 
-    ALLOCATE(LR(NSurf, 2), LT(NSurf, 3), S(NSurf), Area(NSurf), STAT = IOS)
+    ALLOCATE(LR(2), LT(3), STAT = IOS)
 
     IF(PolygonIndex(SIndex) == 4)THEN
         DO J = 1, 4
@@ -298,10 +298,10 @@ SUBROUTINE CalculateAreaSurfaces()
         END DO
 
         DO I = 1, 2
-            LR(SIndex, I) = SQRT((X(I + 1) - X(I))**2 + (Y(I + 1) - Y(I))**2 + (Z(I + 1) - Z(I))**2)
+            LR(I) = SQRT((X(I + 1) - X(I))**2 + (Y(I + 1) - Y(I))**2 + (Z(I + 1) - Z(I))**2)
         END DO
 
-        Area(SIndex) = LR(SIndex, 1) * LR(SIndex, 2)
+        Area(SIndex) = LR(1) * LR(2)
 !
     ELSEIF(PolygonIndex(SIndex) == 3)THEN
         DO J = 1, 4
@@ -318,11 +318,11 @@ SUBROUTINE CalculateAreaSurfaces()
         END DO
 
         DO J = 1, 3
-            LT(SIndex, J) = SQRT((X(J + 1) - X(J))**2 + (Y(J + 1) - Y(J))**2 + (Z(J + 1) - Z(J))**2)
+            LT(J) = SQRT((X(J + 1) - X(J))**2 + (Y(J + 1) - Y(J))**2 + (Z(J + 1) - Z(J))**2)
         END DO
 
-        S(SIndex) = (LT(SIndex, 1) + LT(SIndex, 2) + LT(SIndex, 3)) / 2
-        Area(SIndex) = SQRT(S(SIndex) * (S(SIndex) - LT(SIndex, 1)) * (S(SIndex) - LT(SIndex, 2)) * (S(SIndex) - LT(SIndex, 3)))
+        S = (LT(1) + LT(2) + LT(3)) / 2
+        Area(SIndex) = SQRT(S * (S - LT(1)) * (S - LT(2)) * (S - LT(3)))
     ENDIF
 END SUBROUTINE CalculateAreaSurfaces
 
@@ -368,7 +368,7 @@ SUBROUTINE AllocateAndInitArrays()
     INTEGER :: I, J, IOS
 
     ALLOCATE(NAEnergy(NSurf, NSurf))
-    ALLOCATE(TCOUNTA(NSurf), STAT = IOS)
+    ALLOCATE(TCOUNTA(NSurf), Area(NSurf), STAT = IOS)
     ALLOCATE(XLS(NSurf), YLS(NSurf), ZLS(NSurf), STAT = IOS)
     ALLOCATE(XP(NSurf, NSurf), YP(NSurf, NSurf), ZP(NSurf, NSurf), Intersection(NSurf, NSurf), STAT = IOS)
     ALLOCATE(Xo(NSurf), Yo(NSurf), Zo(NSurf), Intersects(NSurf), STAT = IOS)

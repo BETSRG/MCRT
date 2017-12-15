@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\usepackage{geometry}
+\usepackage[margin=1.0in]{geometry}
 \usepackage{graphicx}
 \usepackage{amsmath}
 
@@ -398,7 +398,7 @@ The following list outlines the some of the program's deficiencies. Some of thes
 
     \item Continuous Integration (CI): continuous integration works by developing sets of tests which are run automatically during the development process. Ideally this happens when an incremental change occurs. As of writing this, the MCRT is building on Travis-CI (\url{https://travis-ci.org/BETSRG/MCRT}) using the gfortran compiler. Any tests that can be run to verify that the code is working should be added to this. The CI environment can also be leveraged to automatically generate ``release" versions of MCRT. When the ``Create a new release" button on the MCRT GitHub repository has been hit (\url{https://github.com/BETSRG/MCRT/releases/new}), CI can be configured to automatically build the \LaTeX ~documentation, build executables for any Windows, Mac, and Linux platform, and post them to the Release page on the MCRT GitHub repository.
     
-    Another issue related to this is selecting the best compiler for a cross-platform project. The current CI compiler, gfortran, will not issue any status messages to the terminal. See this stack overflow post for more information: \url{https://stackoverflow.com/questions/36235641/console-output-stdio-does-not-work-on-windows-cross-compiled-with-mingw32}.
+    Another issue related to this is selecting the best compiler for a cross-platform project. The current CI compiler, gfortran, will not issue any status messages to the terminal. See this stack overflow \footnote{\url{https://stackoverflow.com/questions/36235641/console-output-stdio-does-not-work-on-windows-cross-compiled-with-mingw32}} post for more information: .
 
     \item General Code Refactoring: the code relies on global variables everywhere in the code. Some thought should be given to a better code architecture which facilitates code reuse and facilitates program modifications.
 
