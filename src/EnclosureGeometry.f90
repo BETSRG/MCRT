@@ -270,11 +270,13 @@ SUBROUTINE CalculateAreaSurfaces()
 !******************************************************************************
 
     IMPLICIT NONE
-    INTEGER :: I, J, IOS
+    INTEGER :: I, J, VStart, VEnd, IOS
     INTEGER, DIMENSION (:) :: VS(4)
     REAL(Prec2), DIMENSION(:) :: X(4), Y(4), Z(4)
     REAL(Prec2), ALLOCATABLE, DIMENSION(:) :: LR, LT
     REAL(Prec2) :: S
+    REAL(Prec2), DIMENSION(:) :: VecA(3), VecB(3), VecD(3), VecC(3)
+    REAL(Prec2) :: LenVecA, LenVecB, LenVecD, LenVecC, Theta1, Theta2
 
     !   LR            Length and width of a rectangular surface in the enclosure
     !   LT            The three sides of a triangular surface in the enclosure
@@ -287,7 +289,10 @@ SUBROUTINE CalculateAreaSurfaces()
     !   Assign the surfaces their corresponding vertices and coordinates and
     !   and calculate areas of rectangular and triangular polygons
 
-    ALLOCATE(LR(2), LT(3), STAT = IOS)
+    ALLOCATE(LR(4), LT(3), STAT = IOS)
+
+    ! Initialize
+    S = 0
 
     IF(PolygonIndex(SIndex) == 4)THEN
         DO J = 1, 4
@@ -297,11 +302,60 @@ SUBROUTINE CalculateAreaSurfaces()
             Z(J) = ZS(VS(J))
         END DO
 
-        DO I = 1, 2
-            LR(I) = SQRT((X(I + 1) - X(I))**2 + (Y(I + 1) - Y(I))**2 + (Z(I + 1) - Z(I))**2)
+        ! Compute the side lengths
+        DO I = 1, 4
+            IF (I .lt. 4) THEN
+                LR(I) = SQRT((X(I + 1) - X(I))**2 + (Y(I + 1) - Y(I))**2 + (Z(I + 1) - Z(I))**2)
+            ELSE
+                LR(4) = SQRT((X(1) - X(4))**2 + (Y(1) - Y(4))**2 + (Z(1) - Z(4))**2)
+            END IF
+            S = S + LR(I)
         END DO
 
-        Area(SIndex) = LR(1) * LR(2)
+        ! Sum of side lengths divided by 2
+        S = S / 2
+
+        ! Determine side vectors
+        ! Vector from vertex 1 to 2
+        VStart = 1
+        VEnd = 2
+        VecA(1) = X(VEnd) - X(VStart)
+        VecA(2) = Y(VEnd) - Y(VStart)
+        VecA(3) = Z(VEnd) - Z(VStart)
+
+        ! Vector from 1 to 4
+        VStart = 1
+        VEnd = 4
+        VecB(1) = X(VEnd) - X(VStart)
+        VecB(2) = Y(VEnd) - Y(VStart)
+        VecB(3) = Z(VEnd) - Z(VStart)
+
+        ! Vector from 3 to 2
+        VStart = 3
+        VEnd = 2
+        VecD(1) = X(VEnd) - X(VStart)
+        VecD(2) = Y(VEnd) - Y(VStart)
+        VecD(3) = Z(VEnd) - Z(VStart)
+
+        ! Vector from 3 to 4
+        VStart = 3
+        VEnd = 4
+        VecC(1) = X(VEnd) - X(VStart)
+        VecC(2) = Y(VEnd) - Y(VStart)
+        VecC(3) = Z(VEnd) - Z(VStart)
+
+        ! Compute vector magnatudes
+        LenVecA = SQRT(VecA(1)**2 + VecA(2)**2 + VecA(3)**2)
+        LenVecB = SQRT(VecB(1)**2 + VecB(2)**2 + VecB(3)**2)
+        LenVecD = SQRT(VecD(1)**2 + VecD(2)**2 + VecD(3)**2)
+        LenVecC = SQRT(VecC(1)**2 + VecC(2)**2 + VecC(3)**2)
+
+        ! Compute two opposing angles
+        Theta1 = ACOS(DOT_PRODUCT(VecA, VecB) / (LenVecA * LenVecB))
+        Theta2 = ACOS(DOT_PRODUCT(VecD, VecC) / (LenVecD * LenVecC))
+
+        ! Compute area using Bretschneider's formula
+        Area(SIndex) = SQRT((S - LR(1)) * (S - LR(2)) * (S - LR(3)) * (S - LR(4)) - LR(1) * LR(2) * LR(3) * LR(4) * COS((Theta1 + Theta2) / 2)**2)
 !
     ELSEIF(PolygonIndex(SIndex) == 3)THEN
         DO J = 1, 4
@@ -375,6 +429,7 @@ SUBROUTINE AllocateAndInitArrays()
     ALLOCATE (EmittedUV(NSurf, 3), STAT = IOS )
 
     NAEnergy = 0
+    Area = 0
     TCOUNTA = 0
     XLS = 0
     YLS = 0
